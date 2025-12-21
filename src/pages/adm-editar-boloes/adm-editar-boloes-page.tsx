@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import {useEffect} from "react";
 
 // Hooks
 import { useBolaoEdicao } from "./hooks/useBolaoEdicao";
@@ -8,12 +9,22 @@ import { useBolaoActions } from "./hooks/useBolaoActions";
 import { AddParticipanteForm, AddJogoForm } from "./components/bolao-tool-bar"; 
 import { BolaoMatrixTable } from "./components/bolao-matrix-table";
 
+
 export const EditarBolaoPage = () => {
     const { id } = useParams();
     
     const { jogos, participantes, palpites, loading, refresh } = useBolaoEdicao(id);
 
     const { addParticipante, addJogo, savePalpite } = useBolaoActions(id, refresh);
+
+    // Apenas para debug
+    const debug = () => {
+        console.log({ jogos, participantes, palpites });
+    };
+    
+    useEffect(() => {
+        debug();
+    }, [jogos, participantes, palpites]);
 
     if (loading) return <div className="p-6 text-gray-500">Carregando dados do bolão...</div>;
 

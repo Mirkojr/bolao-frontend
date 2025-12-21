@@ -7,7 +7,7 @@ export interface Time {
 }
 
 export interface Jogo {
-    id: string;
+    id: number;
     time_a_id: number;
     time_b_id: number;
     data_jogo: string;
