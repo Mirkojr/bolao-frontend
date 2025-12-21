@@ -1,5 +1,5 @@
-import { httpClient } from '../api/httpClient';
-import type { Bolao } from '../interfaces/bolao';
+import { httpClient } from '@/shared/api/httpClient';
+import type { Bolao } from '@/shared/interfaces/bolao';
 
 export const BoloesService = {
     getAll: async (): Promise<Bolao[]> => {

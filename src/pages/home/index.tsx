@@ -1,4 +1,4 @@
-import NavBar from '../../shared/components/nav-bar/nav-bar'
+import NavBar from '@/shared/components/nav-bar/nav-bar'
 
 function Home() {
     return (

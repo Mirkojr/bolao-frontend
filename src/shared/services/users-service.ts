@@ -1,5 +1,5 @@
-import { httpClient } from '../api/httpClient';
-import type { User } from '../interfaces/user';
+import { httpClient } from '@/shared/api/httpClient';
+import type { User } from '@/shared/interfaces/user';
 
 
 export const usersService = {

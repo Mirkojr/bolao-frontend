@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { BoloesTableProps } from "../../../shared/interfaces/bolao-table-props";
+import type { BoloesTableProps } from "@/shared/interfaces/bolao-table-props";
 
 export const BoloesTable = ({ boloes }: BoloesTableProps) => {
   return (

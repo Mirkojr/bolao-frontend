@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Palpite } from "../../../shared/interfaces/palpite";
+import type { Palpite } from "@/shared/interfaces/palpite";
 
 interface PalpiteCellProps {
   palpite: Palpite | undefined;

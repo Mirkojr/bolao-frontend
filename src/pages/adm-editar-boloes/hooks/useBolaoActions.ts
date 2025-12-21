@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { ParticipantesService } from "../../../shared/services/participantes-service";
-import { JogosService } from "../../../shared/services/jogos-service";
-import { PalpitesService } from "../../../shared/services/palpite-service";
+import { ParticipantesService } from "@/shared/services/participantes-service";
+import { JogosService } from "@/shared/services/jogos-service";
+import { PalpitesService } from "@/shared/services/palpite-service";
 
 // Hook para gerenciar ações de escrita em um bolão específico 
 // (adicionar participante, jogo, e salvar palpite)
@@ -14,7 +14,7 @@ export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => vo
             onSuccess(); // Chama o refresh 
         } catch (error: any) {
             console.error(error);
-            alert("Erro ao adicionar participante");
+            alert("Erro ao adicionar participante: " + (error.message || ""));
         }
     }, [bolaoId, onSuccess]);
 
@@ -23,9 +23,9 @@ export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => vo
         try {
             await JogosService.add(bolaoId, timeA, timeB);
             onSuccess();
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Erro ao adicionar jogo");
+            alert("Erro ao adicionar jogo: " + error.message || "");
         }
     }, [bolaoId, onSuccess]);
 

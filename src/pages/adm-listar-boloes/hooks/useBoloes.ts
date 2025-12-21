@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import type { Bolao } from "../../../shared/interfaces/bolao";
-import { BoloesService } from "../../../shared/services/bolao-service";
+import type { Bolao } from "@/shared/interfaces/bolao";
+import { BoloesService } from "@/shared/services/bolao-service";
 
 // Hook para gerenciar a lista de bolões, criação, deleção e atualização
 export const useBoloes = () => {

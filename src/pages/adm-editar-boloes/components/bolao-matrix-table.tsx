@@ -1,7 +1,7 @@
 import { PalpiteCell } from "./palpite-cell";
-import type { Jogo } from "../../../shared/interfaces/jogo";
-import type { Participante } from "../../../shared/interfaces/participante";
-import type { Palpite } from "../../../shared/interfaces/palpite";
+import type { Jogo } from "@/shared/interfaces/jogo";
+import type { Participante } from "@/shared/interfaces/participante";
+import type { Palpite } from "@/shared/interfaces/palpite";
 
 const getTeamName = (time: any) => {
     if (!time) return '?';

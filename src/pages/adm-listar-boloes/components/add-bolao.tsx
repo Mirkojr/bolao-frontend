@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AddBolaoProps } from '../interface/add-bolao-props';
+import type { AddBolaoProps } from '@/shared/interfaces/add-bolao-props';
 
 export const AddBolaoForm = ({onCriar, isCreating}: AddBolaoProps) => {
   const [nome, setNome] = useState('');

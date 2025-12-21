@@ -1,5 +1,5 @@
-import { httpClient } from '../api/httpClient';
-import type { Palpite } from '../interfaces/palpite';
+import { httpClient } from '@/shared/api/httpClient';
+import type { Palpite } from '@/shared/interfaces/palpite';
 
 export const PalpitesService = {
     getByBolaoId: async (bolaoId: string): Promise<Palpite[]> => {

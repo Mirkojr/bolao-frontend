@@ -1,6 +1,6 @@
 import { BoloesTable } from "./components/boloes-table";
 import { useBoloes } from "./hooks/useBoloes"; 
-import NavBar from '../../shared/components/nav-bar/nav-bar'
+import NavBar from '@/shared/components/nav-bar/nav-bar'
 import { AddBolaoForm } from "./components/add-bolao";
 
 export const AdminBolaoPage = () => {

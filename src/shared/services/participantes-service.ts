@@ -1,5 +1,5 @@
-import { httpClient } from '../api/httpClient';
-import type { Participante } from '../interfaces/participante';
+import { httpClient } from '@/shared/api/httpClient';
+import type { Participante } from '@/shared/interfaces/participante';
 
 export const ParticipantesService = {
     getByBolaoId: async (bolaoId: string): Promise<Participante[]> => {
