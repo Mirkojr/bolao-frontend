@@ -12,7 +12,7 @@ export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => vo
         try {
             await ParticipantesService.add(bolaoId, nome);
             onSuccess(); // Chama o refresh 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             alert("Erro ao adicionar participante");
         }
@@ -29,19 +29,21 @@ export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => vo
         }
     }, [bolaoId, onSuccess]);
 
-    const savePalpite = useCallback(async (partId: string, jogoId: string, pa: number, pb: number) => {
+    const savePalpite = useCallback(async (userId: string, jogoId: string, pa: number, pb: number) => {
         if (!bolaoId) return;
         try {
             await PalpitesService.save(bolaoId, {
-                participante_id: partId,
+                user_id: userId, 
                 jogo_id: jogoId,
                 gol_a_palpite: pa,
                 gol_b_palpite: pb
             });
             onSuccess();
-        } catch (error) {
+        } catch (error: any) {
+            const mensagemErro = error.message || "Erro ao salvar palpite";
+
             console.error(error);
-            alert("Erro ao salvar palpite");
+            alert(mensagemErro);
         }
     }, [bolaoId, onSuccess]);
 

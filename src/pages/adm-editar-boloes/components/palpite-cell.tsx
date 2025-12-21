@@ -65,7 +65,7 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
         );
     }
 
-    // MODO VISUALIZAÇÃO (o bonitinho)
+    // MODO VISUALIZAÇÃO 
     console.log("Valor atual do palpite:", palpite, typeof palpite);
     return (
         <div 

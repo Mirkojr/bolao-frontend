@@ -3,9 +3,6 @@ import type { Jogo } from "../../../shared/interfaces/jogo";
 import type { Participante } from "../../../shared/interfaces/participante";
 import type { Palpite } from "../../../shared/interfaces/palpite";
 
-// --- 1. FUNÇÕES AUXILIARES (Lógica Pura) ---
-// Tira a sujeira visual de dentro do HTML
-
 const getTeamName = (time: any) => {
     if (!time) return '?';
     return typeof time === 'string' ? time : (time.sigla || time.nome || '?');
@@ -18,9 +15,6 @@ const findPalpite = (palpites: Palpite[], userId: number, jogoId: number) => {
     );
 };
 
-// --- 2. SUB-COMPONENTE: Linha da Tabela ---
-// Responsável apenas por renderizar UM participante e suas células
-
 interface MatrixRowProps {
     participante: Participante;
     jogos: Jogo[];
@@ -30,12 +24,12 @@ interface MatrixRowProps {
 const MatrixRow = ({ participante, jogos, palpites, onSave }: MatrixRowProps) => {
     return (
         <tr className="border-t hover:bg-gray-50">
-            {/* Coluna do Nome - AGORA COM O NOME REAL */}
+            {/* Coluna do Nome */}
             <td className="px-4 py-3 font-bold sticky left-0 bg-white border-r shadow-sm whitespace-nowrap">
                 {participante.nome || `Usuário #${participante.user_id}`}
             </td>
 
-            {/* Células dos Jogos (o resto continua igual) */}
+            {/* Células dos Jogos */}
             {jogos.map(jogo => {
                 const palpite = findPalpite(palpites, Number(participante.user_id), jogo.id);
                 
