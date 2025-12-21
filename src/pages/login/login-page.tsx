@@ -18,17 +18,13 @@ const Login = () => {
     try {
       const resposta = await authService.login(email, senha);
       
-      console.log('Login Sucesso:', resposta); // 🕵️‍♂️ Olhe aqui no console!
+      console.log('Login Sucesso:', resposta);
 
-      // 1. SALVANDO O TOKEN 💾
-      // O 'resposta.token' depende de como seu backend devolve (pode ser accessToken, jwt, etc)
       if (resposta.token) {
         localStorage.setItem('meu_token', resposta.token); 
         alert('Token salvo com sucesso!');
         navigate('/admin/bolao-crud');
-        // navigate('/admin'); // 2. Agora sim podemos redirecionar
       } else {
-        // Caso o login funcione mas não venha token (acontece em alguns backends)
         console.warn('Login funcionou, mas não achei o campo "token" na resposta.');
       }
 

@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { BolaoService} from "../services/bolao-service";
+
+// Serviços
+import { JogosService } from "../../../shared/services/jogos-service";
+import { ParticipantesService } from "../../../shared/services/participantes-service";
+import { PalpitesService } from "../../../shared/services/palpite-service";
+
+// Interfaces
 import type { Jogo } from "../../../shared/interfaces/jogo";
 import type { Participante } from "../../../shared/interfaces/participante";
 import type { Palpite } from "../../../shared/interfaces/palpite";
 
+// Hook para retornar os dados de edição de um bolão específico (palpites, jogos, participantes)
+// Inclui lógica de carregamento e refresh
 export const useBolaoEdicao = (bolaoId: string | undefined) => {
     const [jogos, setJogos] = useState<Jogo[]>([]);
     const [participantes, setParticipantes] = useState<Participante[]>([]);
@@ -15,9 +23,9 @@ export const useBolaoEdicao = (bolaoId: string | undefined) => {
         setLoading(true);
         try {
             const [j, part, palp] = await Promise.all([
-                BolaoService.getJogos(bolaoId),
-                BolaoService.getParticipantes(bolaoId),
-                BolaoService.getPalpites(bolaoId)
+                JogosService.getJogos(bolaoId),
+                ParticipantesService.getParticipantes(bolaoId),
+                PalpitesService.getPalpites(bolaoId)
             ]);
             console.log("Dados carregados:", { jogos: j, participantes: part, palpites: palp });
             setJogos(j);
