@@ -1,5 +1,5 @@
 export interface Participante {
-    user_id(user_id: any): unknown; 
-    id: string; 
+    user_id: number;
+    bolao_id: number;
     nome: string; 
 }

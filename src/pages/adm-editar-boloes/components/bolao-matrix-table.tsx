@@ -35,7 +35,7 @@ const MatrixRow = ({ participante, jogos, palpites, onSave }: MatrixRowProps) =>
                 
                 return (
                     <td key={`${participante.user_id}-${jogo.id}`} className="px-2 py-2 text-center border-l">
-                        <PalpiteCell 
+                        <PalpiteCell
                             palpite={palpite}
                             onSave={async (pa, pb) => onSave(String(participante.user_id), String(jogo.id), pa, pb)}
                         />
@@ -63,7 +63,8 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
             </div>
         );
     }
-
+    console.log("IDs dos jogos:", jogos.map(j => j.id));
+    console.log("IDs dos participantes:", participantes);
     return (
         <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
             <table className="w-full text-sm text-left">
@@ -85,9 +86,9 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
                 <tbody>
                     {participantes.map(p => (
                         <MatrixRow 
-                            key={p.id}
+                            key={`${p.user_id}`}
                             participante={p}
-                            jogos={jogos}
+                            jogos={jogos} 
                             palpites={palpites}
                             onSave={onSavePalpite}
                         />

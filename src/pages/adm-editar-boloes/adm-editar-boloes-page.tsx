@@ -15,6 +15,8 @@ export const EditarBolaoPage = () => {
     
     const { jogos, participantes, palpites, loading, refresh } = useBolaoEdicao(id);
 
+    console.log("Estado do bolão:", { jogos, participantes, palpites, loading });
+    
     const { addParticipante, addJogo, savePalpite } = useBolaoActions(id, refresh);
 
     // Apenas para debug
