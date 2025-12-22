@@ -3,15 +3,13 @@ import { ParticipantesService } from "@/shared/services/participantes-service";
 import { JogosService } from "@/shared/services/jogos-service";
 import { PalpitesService } from "@/shared/services/palpite-service";
 
-// Hook para gerenciar ações de escrita em um bolão específico 
-// (adicionar participante, jogo, e salvar palpite)
 export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => void) => {
     
     const addParticipante = useCallback(async (nome: string) => {
         if (!bolaoId) return;
         try {
-            await ParticipantesService.add(bolaoId, nome);
-            onSuccess(); // Chama o refresh 
+            await ParticipantesService.add(bolaoId, nome); 
+            onSuccess();
         } catch (error: any) {
             console.error(error);
             alert("Erro ao adicionar participante: " + (error.message || ""));
@@ -25,25 +23,23 @@ export const useBolaoActions = (bolaoId: string | undefined, onSuccess: () => vo
             onSuccess();
         } catch (error: any) {
             console.error(error);
-            alert("Erro ao adicionar jogo: " + error.message || "");
+            alert("Erro ao adicionar jogo: " + (error.message || ""));
         }
     }, [bolaoId, onSuccess]);
 
-    const savePalpite = useCallback(async (userId: string, jogoId: string, pa: number, pb: number) => {
+    const savePalpite = useCallback(async (participanteId: string, jogoId: string, pa: number, pb: number) => {
         if (!bolaoId) return;
         try {
             await PalpitesService.save(bolaoId, {
-                user_id: userId, 
+                participante_id: participanteId,
                 jogo_id: jogoId,
                 gol_a_palpite: pa,
                 gol_b_palpite: pb
             });
             onSuccess();
         } catch (error: any) {
-            const mensagemErro = error.message || "Erro ao salvar palpite";
-
             console.error(error);
-            alert(mensagemErro);
+            alert(error.message || "Erro ao salvar palpite");
         }
     }, [bolaoId, onSuccess]);
 

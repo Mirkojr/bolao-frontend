@@ -23,10 +23,11 @@ export const useBolaoEdicao = (bolaoId: string | undefined) => {
         setLoading(true);
         try {
             const [j, part, palp] = await Promise.all([
-                JogosService.getJogos(bolaoId),
-                ParticipantesService.getParticipantes(bolaoId),
-                PalpitesService.getPalpites(bolaoId)
+                JogosService.getByBolaoId(bolaoId),
+                ParticipantesService.getByBolaoId(bolaoId),
+                PalpitesService.getByBolaoId(bolaoId)
             ]);
+
             console.log("Dados carregados:", { jogos: j, participantes: part, palpites: palp });
             setJogos(j);
             setParticipantes(part);

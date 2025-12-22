@@ -8,9 +8,9 @@ const getTeamName = (time: any) => {
     return typeof time === 'string' ? time : (time.sigla || time.nome || '?');
 };
 
-const findPalpite = (palpites: Palpite[], userId: number, jogoId: number) => {
+const findPalpite = (palpites: Palpite[], participanteId: number, jogoId: number) => {
     return palpites.find(pl => 
-        Number(pl.user_id) === Number(userId) && 
+        Number(pl.participante_id) === Number(participanteId) && 
         Number(pl.jogo_id) === Number(jogoId)
     );
 };
@@ -21,23 +21,20 @@ interface MatrixRowProps {
     palpites: Palpite[];
     onSave: (partId: string, jogoId: string, pa: number, pb: number) => void;
 }
+
 const MatrixRow = ({ participante, jogos, palpites, onSave }: MatrixRowProps) => {
     return (
         <tr className="border-t hover:bg-gray-50">
-            {/* Coluna do Nome */}
             <td className="px-4 py-3 font-bold sticky left-0 bg-white border-r shadow-sm whitespace-nowrap">
-                {participante.nome || `Usuário #${participante.user_id}`}
+                {participante.nome}
             </td>
-
-            {/* Células dos Jogos */}
             {jogos.map(jogo => {
-                const palpite = findPalpite(palpites, Number(participante.user_id), jogo.id);
-                
+                const palpite = findPalpite(palpites, Number(participante.id), jogo.id);
                 return (
-                    <td key={`${participante.user_id}-${jogo.id}`} className="px-2 py-2 text-center border-l">
+                    <td key={`${participante.id}-${jogo.id}`} className="px-2 py-2 text-center border-l">
                         <PalpiteCell
                             palpite={palpite}
-                            onSave={async (pa, pb) => onSave(String(participante.user_id), String(jogo.id), pa, pb)}
+                            onSave={async (pa, pb) => onSave(String(participante.id), String(jogo.id), pa, pb)}
                         />
                     </td>
                 );
@@ -46,7 +43,6 @@ const MatrixRow = ({ participante, jogos, palpites, onSave }: MatrixRowProps) =>
     );
 };
 
-// COMPONENTE PRINCIPAL
 interface BolaoMatrixTableProps {
     jogos: Jogo[];
     participantes: Participante[];
@@ -55,20 +51,17 @@ interface BolaoMatrixTableProps {
 }
 
 export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite }: BolaoMatrixTableProps) => {
-    
     if (participantes.length === 0) {
         return (
             <div className="p-8 text-center text-gray-500 bg-white rounded shadow border border-gray-200">
-                Nenhum participante adicionado ainda. Use o formulário acima.
+                Nenhum participante adicionado ainda.
             </div>
         );
     }
-    console.log("IDs dos jogos:", jogos.map(j => j.id));
-    console.log("IDs dos participantes:", participantes);
+    
     return (
         <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
             <table className="w-full text-sm text-left">
-                {/* Cabeçalho */}
                 <thead className="bg-gray-100 text-xs uppercase text-gray-600">
                     <tr>
                         <th className="px-4 py-3 sticky left-0 bg-gray-100 border-r z-10">
@@ -81,12 +74,10 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
                         ))}
                     </tr>
                 </thead>
-
-                {/* Corpo */}
                 <tbody>
                     {participantes.map(p => (
                         <MatrixRow 
-                            key={`${p.user_id}`}
+                            key={p.id}
                             participante={p}
                             jogos={jogos} 
                             palpites={palpites}

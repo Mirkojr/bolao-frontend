@@ -1,16 +1,13 @@
 import { httpClient } from '@/shared/api/httpClient';
-import type { Jogo } from '../interfaces/jogo';
+import type { Jogo } from '@/shared/interfaces/jogo';
  
 export const JogosService = {
     getByBolaoId: async (bolaoId: string): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },
 
-    getJogos: async (bolaoId: string): Promise<Jogo[]> => {
-        return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
-    },
-
     add: async (bolaoId: string, timeA: string, timeB: string): Promise<Jogo> => {
+        // O backend deve buscar o ID dos times pelo nome ou criar se não existir
         return httpClient.post<Jogo>(`/boloes/${bolaoId}/jogos`, { 
             timeA: timeA, 
             timeB: timeB 

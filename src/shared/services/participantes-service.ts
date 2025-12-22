@@ -8,9 +8,5 @@ export const ParticipantesService = {
 
     add: async (bolaoId: string, nome: string): Promise<Participante> => {
         return httpClient.post<Participante>(`/boloes/${bolaoId}/participantes`, { nome });
-    },
-
-    getParticipantes: async (bolaoId: string): Promise<Participante[]> => {
-        return httpClient.get<Participante[]>(`/boloes/${bolaoId}/participantes`);
     }
 };
