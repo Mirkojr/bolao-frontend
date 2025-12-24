@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 // Componentes
 import { AddParticipanteForm, AddJogoForm } from "./components/bolao-tool-bar"; 
 import { BolaoMatrixTable } from "./components/bolao-matrix-table";
+import { ParticipanteList } from "./components/participante-list";
 
 // Hooks 
 import { useParticipantes } from "./hooks/useParticipantes";
@@ -13,7 +14,7 @@ export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
     
     // Hooks de dados
-    const { participantes, addParticipante, loading: loadingPart } = useParticipantes(bolaoId);
+    const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
     const { jogos, addJogo, loading: loadingJogos } = useJogos(bolaoId);
     const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
 
@@ -51,6 +52,15 @@ export const EditarBolaoPage = () => {
                 </div>
             )}
             
+            {/* --- LISTA DE PARTICIPANTES --- */}
+            <div className="mt-12">
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Usuários</h2>
+                <ParticipanteList 
+                    participantes={participantes}
+                    onRemove={ (id) => removeParticipante(bolaoId!, id)}
+                />
+            </div>
+
         </div>
     );
 };

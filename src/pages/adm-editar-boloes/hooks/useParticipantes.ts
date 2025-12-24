@@ -35,6 +35,23 @@ export const useParticipantes = (bolaoId: string | undefined) => {
         }
     };
 
+    const removeParticipante = async (bolaoId: string, id : number) => {
+        if (!id || !bolaoId) return;
+
+        try {
+            setLoading(true);
+
+            await ParticipantesService.remove(bolaoId, id);
+            setParticipantes((participantes) => participantes.filter(p => p.id !== id));
+
+        } catch (error: any) {
+            console.error("Erro ao remover participante:", error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         carregarParticipantes();
     }, [carregarParticipantes]);
@@ -42,6 +59,7 @@ export const useParticipantes = (bolaoId: string | undefined) => {
     return { 
         participantes, 
         addParticipante, 
+        removeParticipante,
         loading,
         refresh: carregarParticipantes 
     };

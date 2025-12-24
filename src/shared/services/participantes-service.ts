@@ -8,5 +8,9 @@ export const ParticipantesService = {
 
     add: async (bolaoId: string, nome: string): Promise<Participante> => {
         return httpClient.post<Participante>(`/boloes/${bolaoId}/participantes`, { nome });
+    },
+
+    remove: async (bolaoId: string, id: number): Promise<Participante> => {
+        return httpClient.delete<Participante>(`/boloes/${bolaoId}/participantes/${id}`);
     }
 };

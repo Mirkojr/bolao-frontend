@@ -42,7 +42,7 @@ export const httpClient = {
         return handleResponse(response);
     },
 
-    delete: async (endpoint: string): Promise<void> => {
+    delete: async <T>(endpoint: string): Promise<T> => {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'DELETE',
             headers: getHeaders(),
