@@ -1,4 +1,4 @@
-import { MatrixRow } from "./matrix-row";
+import { MatrixRow } from "../components/matrix-row";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import type { Participante } from "@/shared/interfaces/participante";
 import type { Palpite } from "@/shared/interfaces/palpite";

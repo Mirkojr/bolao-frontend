@@ -2,9 +2,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from './services/login-service';
+import { useAuth } from '@/context/AuthContext';
+
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -18,9 +23,8 @@ const Login = () => {
     try {
       const resposta = await authService.login(email, senha);
       
-      console.log('Login Sucesso:', resposta);
-
       if (resposta.token) {
+        login(resposta.user);
         localStorage.setItem('meu_token', resposta.token); 
         alert('Token salvo com sucesso!');
         navigate('/admin/bolao-crud');

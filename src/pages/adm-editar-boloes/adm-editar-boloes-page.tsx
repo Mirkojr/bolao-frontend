@@ -1,14 +1,16 @@
 import { useParams } from "react-router-dom";
 
 // Componentes
-import { AddParticipanteForm, AddJogoForm } from "./components/bolao-tool-bar"; 
-import { BolaoMatrixTable } from "./components/bolao-matrix-table";
+import { AddParticipanteForm } from "./components/add-participante-form";
+import { AddJogoForm } from "./components/add-jogo-form"; 
+import { BolaoMatrixTable } from "./layouts/bolao-matrix-table";
 import { ParticipanteList } from "./components/participante-list";
 
 // Hooks 
 import { useParticipantes } from "./hooks/useParticipantes";
 import { useJogos } from "./hooks/useJogos";
 import { usePalpites } from "./hooks/usePalpites";
+import { TeamAdder } from "./components/team-adder";
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
@@ -31,10 +33,6 @@ export const EditarBolaoPage = () => {
 
             {/* --- TOOLBAR --- */}
             <div className="flex flex-wrap gap-4 mb-8 p-4 bg-gray-100 rounded-lg border border-gray-200 items-center">
-                <AddParticipanteForm onAdd={addParticipante} />
-                
-                <div className="w-px h-8 bg-gray-300 mx-2 hidden md:block"></div>
-                
                 <AddJogoForm onAdd={addJogo} />
             </div>
 
@@ -53,14 +51,18 @@ export const EditarBolaoPage = () => {
             )}
             
             {/* --- LISTA DE PARTICIPANTES --- */}
+
             <div className="mt-12">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Usuários</h2>
+                <AddParticipanteForm onAdd={addParticipante} />
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">Participantes</h2>
                 <ParticipanteList 
                     participantes={participantes}
                     onRemove={ (id) => removeParticipante(bolaoId!, id)}
                 />
             </div>
 
+            {/* Adicionar times */}
+            <TeamAdder />
         </div>
     );
 };
