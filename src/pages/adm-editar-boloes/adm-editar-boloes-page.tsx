@@ -11,9 +11,15 @@ import { useParticipantes } from "./hooks/useParticipantes";
 import { useJogos } from "./hooks/useJogos";
 import { usePalpites } from "./hooks/usePalpites";
 import { TeamAdder } from "./components/team-adder";
+import { useAuth } from "@/context/AuthContext";
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
+    
+    const { isAuthenticated } = useAuth();
+    if (!isAuthenticated) {
+        return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login como administrador.</div>;
+    }
     
     // Hooks de dados
     const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);

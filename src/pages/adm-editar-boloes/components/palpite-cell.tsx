@@ -46,7 +46,7 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
     // MODO EDIÇÃO
     if (isEditing) {
         return (
-            <div className="flex items-center justify-center gap-1 min-w-[100px]">
+            <div className="flex items-center justify-center gap-1 min-w-25">
                 <input
                     ref={firstInputRef}
                     type="number"

@@ -23,14 +23,27 @@ const Login = () => {
     try {
       const resposta = await authService.login(email, senha);
       
+      // --- ADICIONE ESTE LOG AQUI ---
+      console.log("🔍 O QUE A API DEVOLVEU:", resposta); 
+      // ------------------------------
+
       if (resposta.token) {
-        login(resposta.user);
-        localStorage.setItem('meu_token', resposta.token); 
-        alert('Token salvo com sucesso!');
-        navigate('/admin/bolao-crud');
+        // PROTEÇÃO: Só tenta logar se o usuário realmente veio
+        if (resposta.user) {
+          alert('Login com sucesso!');
+          localStorage.setItem('meu_token', resposta.token); 
+          
+          // O erro dava aqui pq resposta.user estava vazio
+          login(resposta.user); 
+          
+          navigate('/admin/bolao-crud');
       } else {
-        console.warn('Login funcionou, mas não achei o campo "token" na resposta.');
+          console.error("❌ O Token veio, mas o User veio vazio!");
+          setErro("Erro no sistema: Usuário não identificado.");
       }
+    } else {
+      console.warn('Login funcionou, mas sem token.');
+    }
 
     } catch (error: any) {
       console.error(error);

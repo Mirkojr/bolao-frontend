@@ -2,10 +2,16 @@ import { BoloesTable } from "./components/boloes-table";
 import { useBoloes } from "./hooks/useBoloes"; 
 import NavBar from '@/shared/components/nav-bar/nav-bar'
 import { AddBolaoForm } from "./components/add-bolao";
+import { useAuth } from "@/context/AuthContext";
 
 export const AdminBolaoPage = () => {
     const { boloes, loading, criarBolao, creating } = useBoloes();
 
+    const { isAuthenticated } = useAuth();
+        if (!isAuthenticated) {
+            return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login como administrador.</div>;
+        }
+        
     return (
         <>
             <NavBar />
