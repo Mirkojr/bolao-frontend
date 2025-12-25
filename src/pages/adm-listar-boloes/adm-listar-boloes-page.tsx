@@ -1,6 +1,5 @@
 import { BoloesTable } from "./components/boloes-table";
-import { useBoloes } from "./hooks/useBoloes"; 
-import NavBar from '@/shared/components/nav-bar/nav-bar'
+import { useBoloes } from "../../shared/hooks/useBoloes"; 
 import { AddBolaoForm } from "./components/add-bolao";
 import { useAuth } from "@/context/AuthContext";
 
@@ -14,7 +13,6 @@ export const AdminBolaoPage = () => {
         
     return (
         <>
-            <NavBar />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Gerenciar Bolões </h1>

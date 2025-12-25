@@ -1,7 +1,5 @@
-import NavBar from '@/shared/components/nav-bar/nav-bar';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
-import { Footer } from '@/shared/components/footer/footer';
 
 function Home() {
     // Pegamos o logout também para permitir sair direto da home
@@ -10,12 +8,7 @@ function Home() {
     return (
         <div className="min-h-screen flex flex-col bg-gray-50">
             
-            {/* 1. Cabeçalho com NavBar fixa no topo */}
-            <header className="sticky top-0 z-50">
-                    <NavBar />
-            </header>
-
-            {/* 2. Conteúdo Principal Centralizado */}
+            {/* Conteúdo Principal Centralizado */}
             <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                 
                 <div className="max-w-3xl space-y-6">
@@ -29,7 +22,7 @@ function Home() {
                             : 'Gerencie seus bolões de forma fácil e rápida. Por favor, faça login para acessar todas as funcionalidades.'}
                     </p>
 
-                    {/* 3. Botões de Ação Dinâmicos */}
+                    {/* Botões de Ação Dinâmicos */}
                     <div className="flex flex-wrap justify-center gap-4 mt-8">
                         {isAuthenticated ? (
                             <>
@@ -59,8 +52,6 @@ function Home() {
 
             </main>
 
-            {/* Rodapé simples */}
-            <Footer />
         </div>
     );
 }

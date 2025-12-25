@@ -7,15 +7,20 @@ import Login from '@/pages/login/login-page';
 import EditarBolaoPage from '@/pages/adm-editar-boloes/adm-editar-boloes-page';
 import NotFoundPage from '@/pages/not-found/not-found-page';
 
+import { MainLayout } from '@/layout/main-layout';
+
 export const AppRoutes = () => {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route element={<MainLayout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/admin/bolao-crud" element={<AdminBolaoPage></AdminBolaoPage>} />
+                        <Route path="/admin/edit/:id" element={<EditarBolaoPage />} />
+                    </Route>
+
                     <Route path="login" element={<Login></Login>} />
-                    <Route path="/admin/bolao-crud" element={<AdminBolaoPage></AdminBolaoPage>} />
-                    <Route path="/admin/edit/:id" element={<EditarBolaoPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </AuthProvider>

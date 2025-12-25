@@ -20,6 +20,24 @@ export const useBoloes = () => {
         }
     };
 
+    const getBolaoById = async (id: number ): Promise<Bolao | undefined> => {
+        // Tenta achar na memória
+        const localBolao = boloes.find(b => b.id == id);
+        
+        if (localBolao) {
+            return localBolao; // Retorno imediato se já tiver
+        }
+
+        // Se não achou busca individualmente na API
+        try {
+            const bolaoDaApi = await BoloesService.getById(id);
+            return bolaoDaApi;
+        } catch (error) {
+            console.error(`Erro ao buscar bolão ${id}:`, error);
+            return undefined;
+        }
+    };
+
     const criarBolao = async (nome: string) => {
         setCreating(true);
         try {
@@ -41,6 +59,7 @@ export const useBoloes = () => {
         loading, 
         criarBolao, 
         creating,
+        getBolaoById,
         refetch: carregarBoloes 
     };
 };

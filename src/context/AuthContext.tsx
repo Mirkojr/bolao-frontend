@@ -1,5 +1,7 @@
 import type { User } from "@/shared/interfaces/user";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+import { AUTH_LOGOUT_EVENT } from "@/shared/api/httpClient";
 
 interface AuthContextType {
     user: User | null;
@@ -32,6 +34,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('meu_token');
         localStorage.removeItem('u_data'); 
     };
+
+    // Escuta eventos de logout globais
+    useEffect(() => {
+        const handleLogoutRequest = () => {
+            logout();
+        };
+        
+        window.addEventListener(AUTH_LOGOUT_EVENT, handleLogoutRequest);
+
+        return () => {
+            window.removeEventListener(AUTH_LOGOUT_EVENT, handleLogoutRequest);
+        };
+    }, []); 
 
     return (
         <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>

@@ -1,12 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
+export const AUTH_LOGOUT_EVENT = 'auth:logout';
+
 const getHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('meu_token')}`,
 });
 
-// Função genérica para tratar respostas
+
 async function handleResponse(response: Response) {
+    if (response.status === 401) {
+        window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
+        throw new Error('Sessão expirada');
+    }
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || 'Erro na requisição API');

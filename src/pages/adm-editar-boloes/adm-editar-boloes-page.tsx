@@ -1,32 +1,37 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
-// Componentes
-import { AddParticipanteForm } from "./components/add-participante-form";
-import { AddJogoForm } from "./components/add-jogo-form"; 
-import { BolaoMatrixTable } from "./layouts/bolao-matrix-table";
-import { ParticipanteList } from "./components/participante-list";
-
-// Hooks 
+// Hooks
 import { useParticipantes } from "./hooks/useParticipantes";
 import { useJogos } from "./hooks/useJogos";
 import { usePalpites } from "./hooks/usePalpites";
-import { TeamAdder } from "./components/team-adder";
-import { useAuth } from "@/context/AuthContext";
+
+// Componentes Genéricos
+import { AddJogoForm } from "./features/secao-jogos/add-jogo-form";
+import { TeamAdder } from "./features/secao-jogos/team-adder";
+
+// Features (As seções completas)
+import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
+import { ParticipantesSection } from "./features/secao-participantes/secao-participantes"; 
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
-    
+    const location = useLocation();
     const { isAuthenticated } = useAuth();
+    
+    // Hooks de Dados
+    const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
+    const { jogos, addJogo, loading: loadingJogos } = useJogos(bolaoId);
+    const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
+    
+    const bolaoState = location.state?.bolaoData;
+    const nomeBolao = bolaoState?.nome || " Bolão ";
+
+    // Validações Iniciais
     if (!isAuthenticated) {
         return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login como administrador.</div>;
     }
     
-    // Hooks de dados
-    const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
-    const { jogos, addJogo, loading: loadingJogos } = useJogos(bolaoId);
-    const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
-
-    // Tela de Carregamento Inicial (só mostra se não tiver dados ainda)
     if (!bolaoId) return <div>ID do bolão não encontrado.</div>;
     
     if (participantes.length === 0 && jogos.length === 0 && loadingPart) {
@@ -35,14 +40,14 @@ export const EditarBolaoPage = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <h1 className="text-2xl font-bold mb-4 text-gray-800">Gerenciar Bolão #{bolaoId}</h1>
+            <h1 className="text-2xl font-bold mb-4 text-gray-800">
+                Gerenciar Bolão #{bolaoId}: <span className="text-blue-600">{nomeBolao}</span>
+            </h1>
 
-            {/* --- TOOLBAR --- */}
             <div className="flex flex-wrap gap-4 mb-8 p-4 bg-gray-100 rounded-lg border border-gray-200 items-center">
                 <AddJogoForm onAdd={addJogo} />
             </div>
 
-            {/* --- TABELA DE PALPITES --- */}
             <BolaoMatrixTable 
                 jogos={jogos}
                 participantes={participantes}
@@ -50,24 +55,18 @@ export const EditarBolaoPage = () => {
                 onSavePalpite={savePalpite}
             />
 
+            <ParticipantesSection 
+                participantes={participantes}
+                onAdd={addParticipante}
+                onRemove={(id) => removeParticipante(bolaoId!, id)}
+            />
+
             {(loadingPart || loadingJogos || loadingPalpites) && (
-                <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg animate-pulse">
+                <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg animate-pulse z-50">
                     Salvando alterações...
                 </div>
             )}
             
-            {/* --- LISTA DE PARTICIPANTES --- */}
-
-            <div className="mt-12">
-                <AddParticipanteForm onAdd={addParticipante} />
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">Participantes</h2>
-                <ParticipanteList 
-                    participantes={participantes}
-                    onRemove={ (id) => removeParticipante(bolaoId!, id)}
-                />
-            </div>
-
-            {/* Adicionar times */}
             <TeamAdder />
         </div>
     );

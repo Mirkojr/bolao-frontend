@@ -10,7 +10,7 @@ export const BoloesService = {
         return httpClient.post<Bolao>('/boloes', dadosBolao);
     },
 
-    getById: async (id: string): Promise<Bolao> => {
+    getById: async (id: number): Promise<Bolao> => {
         return httpClient.get<Bolao>(`/boloes/${id}`);
     }
 };

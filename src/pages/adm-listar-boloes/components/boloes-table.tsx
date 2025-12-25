@@ -20,6 +20,7 @@ export const BoloesTable = ({ boloes }: BoloesTableProps) => {
               <td className="px-6 py-4 font-medium text-gray-900">
                 <Link 
                   to={`/admin/edit/${bolao.id}`} 
+                  state={{ bolaoData: bolao }} 
                   className="hover:text-green-600 hover:underline transition-colors"
                 >
                   {bolao.nome}

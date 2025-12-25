@@ -48,4 +48,3 @@ export const AddJogoForm = ({ onAdd }: AddJogoFormProps) => {
     );
 };
 
-export default AddJogoForm;
