@@ -1,4 +1,6 @@
 import type { Participante } from "@/shared/interfaces/participante";
+import { Card } from "../../components/Card";
+import { Button } from "../../components/Button";
 
 interface ParticipanteListProps {
     participantes: Participante[];
@@ -18,25 +20,30 @@ export const ParticipanteList = ({ participantes, onRemove }: ParticipanteListPr
     return (
         <div className="space-y-2">
             {participantes.map((p) => (
-                <div 
-                    key={p.id} 
-                    className="flex justify-between items-center p-4 bg-white rounded shadow-sm border border-gray-200 hover:border-gray-300 transition-colors"
+                <Card 
+                    key={p.id}
+                    variant="default"
+                    hoverable
+                    padding="md"
+                    className="flex justify-between items-center"
                 >
                     <p className="font-medium text-gray-800">
                         {p.nome} <span className="text-xs text-gray-400 ml-1">#{p.id}</span>
                     </p>
 
-                    <button 
+                    <Button
                         onClick={() => {
                             if (confirmacaoRemocao(p.nome)) {
                                 onRemove(p.id);
                             }
                         }}
-                        className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-800 hover:bg-red-50 border border-transparent hover:border-red-200 rounded transition-all"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-800 hover:bg-red-50 border-transparent hover:border-red-200"
                     >
                         Deletar
-                    </button>
-                </div>
+                    </Button>
+                </Card>
             ))}
         </div>
     );

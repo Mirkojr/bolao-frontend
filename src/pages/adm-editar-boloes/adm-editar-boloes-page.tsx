@@ -6,11 +6,12 @@ import { useParticipantes } from "./hooks/useParticipantes";
 import { useJogos } from "./hooks/useJogos";
 import { usePalpites } from "./hooks/usePalpites";
 
-// Componentes Genéricos
+// Componentes 
 import { AddJogoForm } from "./features/secao-jogos/add-jogo-form";
-import { TeamAdder } from "./features/secao-jogos/team-adder";
+import { LoadingSpinner } from "./components/LoadingSpinner";
+import { Section } from "./components/Section";
 
-// Features (As seções completas)
+// Features 
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secao-participantes"; 
 
@@ -35,7 +36,15 @@ export const EditarBolaoPage = () => {
     if (!bolaoId) return <div>ID do bolão não encontrado.</div>;
     
     if (participantes.length === 0 && jogos.length === 0 && loadingPart) {
-         return <div className="p-6 text-gray-500">Carregando dados do bolão...</div>;
+         return (
+            <div className="p-6">
+                <LoadingSpinner 
+                    message="Carregando dados do bolão..." 
+                    position="centered"
+                    size="lg"
+                />
+            </div>
+         );
     }
 
     return (
@@ -44,16 +53,20 @@ export const EditarBolaoPage = () => {
                 Gerenciar Bolão #{bolaoId}: <span className="text-blue-600">{nomeBolao}</span>
             </h1>
 
-            <div className="flex flex-wrap gap-4 mb-8 p-4 bg-gray-100 rounded-lg border border-gray-200 items-center">
-                <AddJogoForm onAdd={addJogo} />
-            </div>
+            <Section title="Adicionar Jogos" className="mb-6">
+                <div className="flex flex-wrap gap-4 p-4 bg-gray-100 rounded-lg border border-gray-200 items-center">
+                    <AddJogoForm onAdd={addJogo} />
+                </div>
+            </Section>
 
-            <BolaoMatrixTable 
-                jogos={jogos}
-                participantes={participantes}
-                palpites={palpites}
-                onSavePalpite={savePalpite}
-            />
+            <Section title="Tabela de Palpites" className="mb-6">
+                <BolaoMatrixTable 
+                    jogos={jogos}
+                    participantes={participantes}
+                    palpites={palpites}
+                    onSavePalpite={savePalpite}
+                />
+            </Section>
 
             <ParticipantesSection 
                 participantes={participantes}
@@ -62,12 +75,12 @@ export const EditarBolaoPage = () => {
             />
 
             {(loadingPart || loadingJogos || loadingPalpites) && (
-                <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg animate-pulse z-50">
-                    Salvando alterações...
-                </div>
+                <LoadingSpinner 
+                    message="Salvando alterações..." 
+                    position="fixed"
+                />
             )}
             
-            <TeamAdder />
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { Palpite } from "@/shared/interfaces/palpite";
+import { ScoreInput } from "../../components/ScoreInput";
 
 interface PalpiteCellProps {
   palpite: Palpite | undefined;
@@ -20,13 +21,6 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
         setScoreB(palpite?.gol_b_palpite ?? 0);
     }, [palpite]);
 
-    useEffect(() => {
-        if (isEditing && firstInputRef.current) {
-            firstInputRef.current.focus();
-            firstInputRef.current.select(); 
-        }
-    }, [isEditing]);
-
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -43,52 +37,29 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
         }
     };
 
+    const handleCancel = () => {
+        setIsEditing(false);
+        setScoreA(palpite?.gol_a_palpite ?? 0);
+        setScoreB(palpite?.gol_b_palpite ?? 0);
+    };
+
     // MODO EDIÇÃO
     if (isEditing) {
         return (
-            <div className="flex items-center justify-center gap-1 min-w-25">
-                <input
+            <div className="flex items-center justify-center min-w-25">
+                <ScoreInput
                     ref={firstInputRef}
-                    type="number"
-                    min="0"
-                    value={scoreA}
-                    onChange={(e) => setScoreA(e.target.value)}
-                    className="w-10 text-center border rounded p-1 text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none m-0"
+                    scoreA={scoreA}
+                    scoreB={scoreB}
+                    onScoreAChange={setScoreA}
+                    onScoreBChange={setScoreB}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
+                    showActions={true}
+                    saving={saving}
+                    size="md"
+                    autoFocus={true}
                 />
-                <span className="text-gray-400 font-bold text-xs">x</span>
-                <input
-                    type="number"
-                    min="0"
-                    value={scoreB}
-                    onChange={(e) => setScoreB(e.target.value)}
-                    className="w-10 text-center border rounded p-1 text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none m-0"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSave();
-                    }}
-                />
-                
-                {/* Botões de Ação */}
-                <div className="flex flex-col gap-1 ml-1">
-                    <button 
-                        onClick={handleSave} 
-                        disabled={saving}
-                        className="text-green-600 hover:text-green-800 text-xs disabled:opacity-50"
-                        title="Salvar"
-                    >
-                        {saving ? '...' : '✔'}
-                    </button>
-                    <button 
-                        onClick={() => {
-                            setIsEditing(false);
-                            setScoreA(palpite?.gol_a_palpite ?? 0);
-                            setScoreB(palpite?.gol_b_palpite ?? 0);
-                        }} 
-                        className="text-red-500 hover:text-red-700 text-xs"
-                        title="Cancelar"
-                    >
-                        ✕
-                    </button>
-                </div>
             </div>
         );
     }

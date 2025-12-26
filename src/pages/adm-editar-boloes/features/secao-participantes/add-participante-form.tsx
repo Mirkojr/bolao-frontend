@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 
 // --- FORMULÁRIO DE PARTICIPANTE ---
 interface AddParticipanteFormProps {
@@ -18,20 +20,23 @@ export const AddParticipanteForm = ({ onAdd }: AddParticipanteFormProps) => {
 
     return (
         <form onSubmit={handleSubmit} className="flex gap-2 items-center bg-white p-3 rounded shadow-sm border border-gray-100">
-            <input 
+            <Input
                 type="text" 
                 placeholder="Nome do participante..." 
                 value={nome}
                 onChange={e => setNome(e.target.value)}
-                className="border rounded px-3 py-1.5 text-sm outline-none focus:border-green-500 w-full md:w-64"
+                variant="default"
+                inputSize="sm"
+                className="w-full md:w-64"
             />
-            <button 
+            <Button
                 type="submit" 
                 disabled={!nome.trim()}
-                className="bg-green-600 text-white px-4 py-1.5 rounded text-sm hover:bg-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                variant="success"
+                size="sm"
             >
                 + Pessoa
-            </button>
+            </Button>
         </form>
     );
 };

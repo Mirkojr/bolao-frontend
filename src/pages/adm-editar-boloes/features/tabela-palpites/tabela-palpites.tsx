@@ -1,4 +1,6 @@
 import { MatrixRow } from "./matrix-row";
+import { EmptyState } from "../../components/EmptyState";
+import { TeamDisplay } from "../../components/TeamDisplay";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import type { Participante } from "@/shared/interfaces/participante";
 import type { Palpite } from "@/shared/interfaces/palpite";
@@ -16,15 +18,14 @@ interface BolaoMatrixTableProps {
     onSavePalpite: (partId: string, jogoId: string, pa: number, pb: number) => void;
 }
 
-const semParticipantesMsg = () => (
-    <div className="p-8 text-center text-gray-500 bg-white rounded shadow border border-gray-200">
-        Nenhum participante adicionado ainda.
-    </div>
-);
-
 export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite }: BolaoMatrixTableProps) => {
     if (participantes.length === 0) {
-        return semParticipantesMsg();
+        return (
+            <EmptyState
+                title="Nenhum participante"
+                message="Adicione participantes para começar a registrar os palpites do bolão."
+            />
+        );
     }
     
     return (
@@ -39,7 +40,11 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
                         </th>
                         {jogos.map(jogo => (
                             <th key={jogo.id} className="px-4 py-3 text-center border-l min-w-30">
-                                {getTeamName(jogo.timeA)} <span className="text-gray-400">x</span> {getTeamName(jogo.timeB)}
+                                <TeamDisplay
+                                    teamA={getTeamName(jogo.timeA)}
+                                    teamB={getTeamName(jogo.timeB)}
+                                    variant="compact"
+                                />
                             </th>
                         ))}
                     </tr>
