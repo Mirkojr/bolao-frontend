@@ -2,6 +2,11 @@ import { httpClient } from '@/shared/api/httpClient';
 import type { Jogo } from '@/shared/interfaces/jogo';
  
 export const JogosService = {
+
+    getAll: async (): Promise<Jogo[]> => {
+        return httpClient.get<Jogo[]>(`/jogos`);
+    },
+
     getByBolaoId: async (bolaoId: string): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },

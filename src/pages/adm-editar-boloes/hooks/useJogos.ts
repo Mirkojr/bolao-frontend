@@ -4,11 +4,12 @@ import { JogosService } from "@/shared/services/jogos-service";
 
 export const useJogos = (bolaoId: string | undefined) => {
     
+    const [ todosJogos, setTodosJogos ] = useState<Jogo[]>([]);
     const [jogos, setJogos] = useState<Jogo[]>([]);
     const [loading, setLoading] = useState(false);
 
     // BUSCAR
-    const carregarJogos = useCallback(async () => {
+    const carregarJogosByBolaoID = useCallback(async () => {
         if (!bolaoId) return;
         try {
             const j = await JogosService.getByBolaoId(bolaoId);
@@ -18,13 +19,25 @@ export const useJogos = (bolaoId: string | undefined) => {
         }
     }, [bolaoId]);
 
+    const carregarJogos = useCallback(async () => {
+        setLoading(true);
+        try {
+            const j = await JogosService.getAll();
+            setTodosJogos(j);
+        } catch (error) {
+            console.error("Erro ao carregar jogos", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     // ADICIONAR
     const addJogo = async (timeA: string, timeB: string) => {
         if (!bolaoId) return;
         try {
             setLoading(true);
             await JogosService.add(bolaoId, timeA, timeB);
-            await carregarJogos();
+            await carregarJogosByBolaoID();
         } catch (error: any) {
             alert("Erro ao adicionar jogo: " + (error.message || ""));
         } finally {
@@ -33,13 +46,15 @@ export const useJogos = (bolaoId: string | undefined) => {
     };
 
     useEffect(() => {
-        carregarJogos();
-    }, [carregarJogos]);
+        carregarJogosByBolaoID();
+    }, [carregarJogosByBolaoID]);
 
     return { 
         jogos, 
         addJogo, 
         loading,
-        refresh: carregarJogos 
+        todosJogos,
+        carregarJogos,
+        refresh: carregarJogosByBolaoID 
     };
 }
