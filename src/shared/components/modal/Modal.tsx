@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState, type HTMLAttributes } from "react"
 
-interface AddJogoModalProps {
+interface ModalProps extends HTMLAttributes<HTMLDivElement>{
     isOpen: boolean,
     children: React.ReactNode
-    setModalOpen: (value: boolean) => void
+    setModalOpen: (value: boolean) => void,
 }
 
 const BACKGROUND_STYLE: React.CSSProperties = {
@@ -44,11 +44,13 @@ const CLOSE_BUTTON_STYLE : React.CSSProperties = {
     cursor: 'pointer'
 }
 
-export default function AddJogoModal({ isOpen, children, setModalOpen}: AddJogoModalProps) {
+export default function ModalGenerico({ isOpen, children, setModalOpen, ...props}: ModalProps) {
 
     if (isOpen) {
         return (
-            <div style={BACKGROUND_STYLE}>
+            <div style={BACKGROUND_STYLE} 
+                {...props}
+            >
                 <div style={MODAL_STYLE}>
                     <button className="hover:text-red-500 hover:scale-125 transition-all"
                             onClick={() => setModalOpen(!isOpen)} 

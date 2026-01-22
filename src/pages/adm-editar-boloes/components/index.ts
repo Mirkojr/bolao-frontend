@@ -1,4 +1,4 @@
-export { Button } from "./Button";
+export { Button } from "../../../shared/components/button/Button";
 export { Input } from "./Input";
 export { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./Card";
 export { LoadingSpinner } from "./LoadingSpinner";

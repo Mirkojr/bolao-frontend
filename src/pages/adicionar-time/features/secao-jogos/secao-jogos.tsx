@@ -2,7 +2,7 @@
 import { AddJogoButton } from  '@/pages/adicionar-time/components/add-jogo-button'
 
 import { JogosList } from './jogos-list';
-import AddJogoModal from '../../components/AddJogoModal';
+import ModalGenerico from '@/shared/components/modal/Modal';
 import { useState } from 'react';
 
 interface SecaoJogosProps {
@@ -22,7 +22,7 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo }: SecaoJogosProps) => {
 
                  <AddJogoButton onClick={() => setOpenModal(!openModal)}/>
              </div>
-             <AddJogoModal setModalOpen={setOpenModal} isOpen={openModal}> Modal Teste </AddJogoModal>
+             <ModalGenerico setModalOpen={setOpenModal} isOpen={openModal}> Funcionando direitinho </ModalGenerico>
              <JogosList jogos={jogos} loading={loading} />
         </section>
     );

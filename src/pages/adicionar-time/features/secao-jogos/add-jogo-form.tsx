@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button } from "../../../adm-editar-boloes/components/Button";
+import { Button } from "../../../../shared/components/button/Button";
 import { Input } from "../../../adm-editar-boloes/components/Input";
 
-// --- FORMULÁRIO DE JOGO ---
+// 
 interface AddJogoFormProps {
     onAdd: (timeA: string, timeB: string) => void;
 }

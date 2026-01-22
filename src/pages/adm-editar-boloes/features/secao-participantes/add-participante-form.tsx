@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "../../components/Button";
+import { Button } from "../../../../shared/components/button/Button";
 import { Input } from "../../components/Input";
 
 // --- FORMULÁRIO DE PARTICIPANTE ---

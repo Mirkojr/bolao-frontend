@@ -13,6 +13,7 @@ import { Section } from "./components/Section";
 // Features 
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secao-participantes"; 
+import { useState } from "react";
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
