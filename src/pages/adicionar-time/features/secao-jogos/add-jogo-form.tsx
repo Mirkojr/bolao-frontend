@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../../../../shared/components/button/Button";
-import { Input } from "../../../adm-editar-boloes/components/Input";
+import { Input } from "../../../../shared/components/input/Input";
 
 // 
 interface AddJogoFormProps {

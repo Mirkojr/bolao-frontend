@@ -1,5 +1,5 @@
 import type { Participante } from "@/shared/interfaces/participante";
-import { Card } from "../../components/Card";
+import { Card } from "../../../../shared/components/card/Card";
 import { Button } from "../../../../shared/components/button/Button";
 import ModalGenerico from "@/shared/components/modal/Modal";
 import { useState } from "react";
@@ -9,13 +9,8 @@ interface ParticipanteListProps {
     onRemove: (id: number) => void;
 }
 
-const confirmacaoRemocao = (nome: string) => {
-    return window.confirm(`Tem certeza que deseja remover o participante "${nome}"? Esta ação não pode ser desfeita.`);
-}
-
 export const ParticipanteList = ({ participantes, onRemove }: ParticipanteListProps) => {
 
-    const [openModal, setOpenModal] = useState(false);
     const [participanteParaRemover, setParticipanteParaRemover] = useState<Participante | null>(null);
     
     if (!participantes || participantes.length === 0) {
@@ -37,11 +32,6 @@ export const ParticipanteList = ({ participantes, onRemove }: ParticipanteListPr
                     </p>
 
                     <Button
-                        // onClick={() => {
-                        //     if (confirmacaoRemocao(p.nome)) {
-                        //         onRemove(p.id);
-                        //     }
-                        // }}
                         onClick={() => setParticipanteParaRemover(p)}
                         variant="ghost"
                         size="sm"
@@ -59,7 +49,7 @@ export const ParticipanteList = ({ participantes, onRemove }: ParticipanteListPr
             > 
                 {/* Container com padding equilibrado e alinhamento central */}
                 <div className="flex flex-col items-center p-6 text-center w-full h-full justify-between">
-                    
+           
                     {/* Cabeçalho de Alerta */}
                     <div className="mt-4">
                         <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
