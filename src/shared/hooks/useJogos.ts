@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import { JogosService } from "@/shared/services/jogos-service";
 
-export const useJogos = (bolaoId: string | undefined) => {
+
+export const useJogos = (bolaoId: string | null = null) => {
     
     const [ todosJogos, setTodosJogos ] = useState<Jogo[]>([]);
     const [jogos, setJogos] = useState<Jogo[]>([]);
@@ -10,7 +11,11 @@ export const useJogos = (bolaoId: string | undefined) => {
 
     // BUSCAR
     const carregarJogosByBolaoID = useCallback(async () => {
-        if (!bolaoId) return;
+        // Se não tiver ID, limpa a lista de jogos específicos e sai
+        if (!bolaoId) {
+            setJogos([]);
+            return;
+        }
         try {
             const j = await JogosService.getByBolaoId(bolaoId);
             setJogos(j);
@@ -19,6 +24,7 @@ export const useJogos = (bolaoId: string | undefined) => {
         }
     }, [bolaoId]);
 
+    // Carregar todos os jogos do sistema
     const carregarJogos = useCallback(async () => {
         setLoading(true);
         try {
@@ -33,7 +39,10 @@ export const useJogos = (bolaoId: string | undefined) => {
 
     // ADICIONAR
     const addJogo = async (timeA: string, timeB: string) => {
-        if (!bolaoId) return;
+        if (!bolaoId) {
+            alert("Necessário selecionar um bolão para adicionar jogos.");
+            return;
+        }
         try {
             setLoading(true);
             await JogosService.add(bolaoId, timeA, timeB);
@@ -45,13 +54,31 @@ export const useJogos = (bolaoId: string | undefined) => {
         }
     };
 
+    const deleteJogo = async (jogoId: string) => {
+        if (!bolaoId) return;
+        try {
+            setLoading(true);
+            await JogosService.delete(bolaoId, jogoId);
+            await carregarJogosByBolaoID();
+        } catch (error: any) {
+            alert("Erro ao deletar jogo: " + (error.message || ""));
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        carregarJogosByBolaoID();
-    }, [carregarJogosByBolaoID]);
+        if(bolaoId){
+            carregarJogosByBolaoID();
+        }else{
+            carregarJogos();
+        }
+    }, [carregarJogosByBolaoID, carregarJogos, bolaoId]);
 
     return { 
         jogos, 
         addJogo, 
+        deleteJogo,
         loading,
         todosJogos,
         carregarJogos,

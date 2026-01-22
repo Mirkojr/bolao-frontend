@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef } from "react";
 
 interface ScoreInputProps {
     scoreA: string | number;
@@ -8,8 +8,6 @@ interface ScoreInputProps {
     onSave?: () => void;
     onCancel?: () => void;
     disabled?: boolean;
-    showActions?: boolean;
-    saving?: boolean;
     separator?: string;
     size?: "sm" | "md" | "lg";
     autoFocus?: boolean;
@@ -30,24 +28,59 @@ export const ScoreInput = forwardRef<HTMLInputElement, ScoreInputProps>(
         onSave,
         onCancel,
         disabled = false,
-        showActions = false,
-        saving = false,
         separator = "x",
         size = "md",
         autoFocus = false
     }, ref) => {
         
-        const handleKeyDown = (e: React.KeyboardEvent) => {
-            if (e.key === 'Enter' && onSave) {
-                onSave();
-            }
-            if (e.key === 'Escape' && onCancel) {
-                onCancel();
+        const initialValues = useRef({ a: scoreA, b: scoreB });
+        const containerRef = useRef<HTMLDivElement>(null);
+
+        const handleFocus = (e: React.FocusEvent<HTMLDivElement>) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+                initialValues.current = { a: scoreA, b: scoreB };
             }
         };
 
+        const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+            if (e.currentTarget.contains(e.relatedTarget)) {
+                return;
+            }
+
+            const hasChanged = 
+                String(scoreA) !== String(initialValues.current.a) || 
+                String(scoreB) !== String(initialValues.current.b);
+
+            if (hasChanged) {
+                onSave?.();
+            } else {
+                onCancel?.();
+            }
+        };
+
+        const handleKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                (document.activeElement as HTMLElement)?.blur();
+            }
+            if (e.key === 'Escape') {
+                onScoreAChange(String(initialValues.current.a));
+                onScoreBChange(String(initialValues.current.b));
+                onCancel?.();
+                (document.activeElement as HTMLElement)?.blur();
+            }
+        };
+
+        // Classes CSS para esconder as setas (spin buttons)
+        // Funciona no Chrome, Safari, Edge e Firefox
+        const noSpinnerClass = "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
         return (
-            <div className="flex items-center justify-center gap-1">
+            <div 
+                ref={containerRef}
+                className="flex items-center justify-center gap-1"
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+            >
                 <input
                     ref={ref}
                     type="number"
@@ -57,10 +90,13 @@ export const ScoreInput = forwardRef<HTMLInputElement, ScoreInputProps>(
                     onKeyDown={handleKeyDown}
                     disabled={disabled}
                     autoFocus={autoFocus}
-                    className={`${sizeStyles[size].input} text-center border rounded outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
+                    placeholder="?"
+                    className={`${sizeStyles[size].input} ${noSpinnerClass} text-center border rounded outline-none 
+                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                    disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 transition-all`}
                 />
                 
-                <span className={`text-gray-400 font-bold ${sizeStyles[size].separator}`}>
+                <span className={`text-gray-400 font-bold select-none ${sizeStyles[size].separator}`}>
                     {separator}
                 </span>
                 
@@ -71,31 +107,11 @@ export const ScoreInput = forwardRef<HTMLInputElement, ScoreInputProps>(
                     onChange={(e) => onScoreBChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     disabled={disabled}
-                    className={`${sizeStyles[size].input} text-center border rounded outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
+                    placeholder="?"
+                    className={`${sizeStyles[size].input} ${noSpinnerClass} text-center border rounded outline-none 
+                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                    disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 transition-all`}
                 />
-                
-                {showActions && (
-                    <div className="flex flex-col gap-1 ml-1">
-                        <button 
-                            onClick={onSave} 
-                            disabled={saving || disabled}
-                            className="text-green-600 hover:text-green-800 text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            title="Salvar"
-                            type="button"
-                        >
-                            {saving ? '⏳' : '✔'}
-                        </button>
-                        <button 
-                            onClick={onCancel}
-                            disabled={disabled}
-                            className="text-red-500 hover:text-red-700 text-xs disabled:opacity-50 transition-colors"
-                            title="Cancelar"
-                            type="button"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                )}
             </div>
         );
     }

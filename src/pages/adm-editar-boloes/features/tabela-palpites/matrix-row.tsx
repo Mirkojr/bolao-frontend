@@ -27,7 +27,10 @@ export const MatrixRow = ({ participante, jogos, palpites, onSave }: MatrixRowPr
                 const palpite = findPalpite(palpites, Number(participante.id), jogo.id);
                 return (
                     <td key={`${participante.id}-${jogo.id}`} className="px-2 py-2 text-center border-l">
+                    
+                    
                         <PalpiteCell
+                            jogo={jogo}
                             palpite={palpite}
                             onSave={async (pa, pb) => onSave(String(participante.id), String(jogo.id), pa, pb)}
                         />

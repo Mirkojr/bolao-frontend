@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import type { Palpite } from "@/shared/interfaces/palpite";
 import { ScoreInput } from "../../components/ScoreInput";
+import type { Jogo } from "@/shared/interfaces/jogo";
 
 interface PalpiteCellProps {
-  palpite: Palpite | undefined;
-  onSave: (gol_a_palpite: number, gol_b_palpite: number) => Promise<void>;
+    jogo: Jogo;    
+    palpite: Palpite | undefined;
+    onSave: (gol_a_palpite: number, gol_b_palpite: number) => Promise<void>;
 }
 
-export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
+
+
+export const PalpiteCell = ({ jogo, palpite, onSave }: PalpiteCellProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     
@@ -20,6 +24,13 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
         setScoreA(palpite?.gol_a_palpite ?? 0);
         setScoreB(palpite?.gol_b_palpite ?? 0);
     }, [palpite]);
+
+    const getCorPorPontos = ( pontos : number = 0) => {
+        if (jogo.status == 'AGENDADO') return "bg-gray-100 text-gray-600 border-gray-200"; // Jogo não ocorreu ainda
+        if (pontos >= 25) return "bg-green-100 text-green-800 border-green-300"; // Cravada
+        if (pontos >= 10) return "bg-blue-100 text-blue-800 border-blue-300";   // Acertou Vencedor
+        return "bg-red-50 text-gray-700 border-transparent"; // Zero / Errou
+    };
 
     const handleSave = async () => {
         setSaving(true);
@@ -75,7 +86,9 @@ export const PalpiteCell = ({ palpite, onSave }: PalpiteCellProps) => {
             className={`
                 cursor-pointer py-2 px-1 rounded transition-all text-center border border-transparent
                 hover:bg-blue-50 hover:border-blue-200 select-none
-                ${!palpite ? 'text-gray-400 italic text-xs' : 'font-mono font-bold text-blue-700 bg-gray-50'}
+                ${!palpite ? 'text-gray-400 italic text-xs'
+                           : `font-mono font-bold ${getCorPorPontos(palpite.pontos_ganhos)}`
+                }
             `}
         >
             {palpite ? (

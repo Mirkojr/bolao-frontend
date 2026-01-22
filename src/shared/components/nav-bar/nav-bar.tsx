@@ -16,7 +16,7 @@ function NavBar() {
                 <div className="flex justify-between h-16">
                     
                     {/* LADO ESQUERDO - Links de Navegação */}
-                    <div className="flex items-center">
+                    <div className="flex items-center space-x-8">
                         {/* Link da Home */}
                         <Link 
                             to="/" 
@@ -27,13 +27,22 @@ function NavBar() {
 
                         {/* Link Admin (Só aparece se estiver logado) */}
                         {isAuthenticated && (
-                            <Link 
-                                to="/admin/bolao-crud" 
-                                className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200"
-                            >
-                                Meus Bolões
-                            </Link>
+                            <>
+                                <Link 
+                                    to="/admin/bolao-crud" 
+                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200"
+                                >
+                                    Meus Bolões
+                                </Link>
+                                <Link
+                                    to="admin/times"
+                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200"
+                                >
+                                    Times
+                                </Link>
+                            </>
                         )}
+
                     </div>
 
                     {/* LADO DIREITO - Área do Usuário */}

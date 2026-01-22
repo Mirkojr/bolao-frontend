@@ -29,7 +29,7 @@ export const JogosList = ({ jogos, loading }: JogosListProps) => {
     return (
         <div className="w-full max-w-2xl mx-auto p-4">
             <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Jogos do Bolão
+                Todos os Jogos
             </h2>
 
             {jogos.length === 0 ? (

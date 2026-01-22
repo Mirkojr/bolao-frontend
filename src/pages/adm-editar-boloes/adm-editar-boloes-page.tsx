@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 
 // Hooks
 import { useParticipantes } from "./hooks/useParticipantes";
-import { useJogos } from "./hooks/useJogos";
+import { useJogos } from "@/shared/hooks/useJogos";
 import { usePalpites } from "./hooks/usePalpites";
 
 // Componentes 
@@ -13,7 +13,6 @@ import { Section } from "./components/Section";
 // Features 
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secao-participantes"; 
-import { SecaoJogos } from "./features/secao-jogos/secao-jogos";
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
@@ -54,12 +53,7 @@ export const EditarBolaoPage = () => {
             </h1>
 
             <Section title="Adicionar Jogos" className="mb-6">
-                {/* CORREÇÃO AQUI: Passamos os dados via props ao invés do ID */}
-                <SecaoJogos 
-                    jogos={jogos} 
-                    loading={loadingJogos} 
-                    onAddJogo={addJogo} 
-                />
+                Adicionar jogos ao bolão ( sera feito ainda )
             </Section>
 
             <Section title="Tabela de Palpites" className="mb-6">

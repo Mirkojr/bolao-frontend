@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
-import { Input } from "../../components/Input";
+import { Button } from "../../../adm-editar-boloes/components/Button";
+import { Input } from "../../../adm-editar-boloes/components/Input";
 
 // --- FORMULÁRIO DE JOGO ---
 interface AddJogoFormProps {
