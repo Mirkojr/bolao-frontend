@@ -3,7 +3,12 @@ import { useJogos } from "@/shared/hooks/useJogos";
 
 export const AdicionarTimePage = () => {
 
-    const { todosJogos, addJogo, loading: loadingJogos } = useJogos();
+    const { 
+        todosJogos, 
+        addJogo, 
+        loading: loadingJogos,
+        filtros
+     } = useJogos();
 
     return (
         <>
@@ -12,6 +17,7 @@ export const AdicionarTimePage = () => {
                     jogos= {todosJogos}
                     loading={loadingJogos}
                     onAddJogo={addJogo}
+                    filtros={filtros}
                 />
             </div>
         </>

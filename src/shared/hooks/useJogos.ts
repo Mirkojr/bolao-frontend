@@ -1,13 +1,64 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import { JogosService } from "@/shared/services/jogos-service";
 
+export type StatusFilter = 'todos' |'finalizado' | 'agendado'
+export type OrdemFilter = 'crescente' | 'decrescente';
 
 export const useJogos = (bolaoId: string | null = null) => {
     
     const [ todosJogos, setTodosJogos ] = useState<Jogo[]>([]);
     const [jogos, setJogos] = useState<Jogo[]>([]);
     const [loading, setLoading] = useState(false);
+
+    const [filtroStatus, setFiltroStatus] = useState<StatusFilter>('todos');
+    const [filtroData, setFiltroData] = useState<string>('');
+
+    const [ordem, setOrdem] = useState<OrdemFilter>('decrescente');
+
+    // FUNÇÃO DE FILTRAGEM
+    const filtrarLista = useCallback((lista: Jogo[]) => {
+        return lista.filter((jogo) => {
+            if (filtroData) {
+                if(!jogo.data_jogo || !jogo.data_jogo.toString().startsWith(filtroData)){
+                    return false;
+                }
+            }
+            if (filtroStatus !== 'todos'){
+                const isFinalizado = jogo.gol_a_real !== null && jogo.gol_a_real !== undefined;
+
+                if (filtroStatus === 'finalizado' && !isFinalizado) return false;
+                if (filtroStatus === 'agendado' && isFinalizado) return false;
+            }   
+
+            return true;
+        })
+    }, [filtroData, filtroStatus]);
+
+    // FUNÇAO DE ORDENAR A LISTA
+    const ordenarLista = useCallback((lista: Jogo[]) => {
+        return lista.sort((a, b) => {
+            const dataA = new Date(a.data_jogo || 0).getTime();
+            const dataB = new Date(b.data_jogo || 0).getTime();
+
+            if (ordem === 'decrescente') {
+                return dataB - dataA; // Mais recentes primeiro
+            } else {
+                return dataA - dataB; // Mais antigos primeiro
+            }
+        });
+    }, [ordem]);
+
+    // LISTAS FILTRADAS
+    const jogosFiltrados = useMemo(() => {
+        const filtrados = filtrarLista([...jogos]); // [...jogos] cria cópia para não mutar o original
+        return ordenarLista(filtrados);
+    }, [jogos, filtrarLista, ordenarLista]);
+
+    const todosJogosFiltrados = useMemo(() => {
+        const filtrados = filtrarLista([...todosJogos]);
+        return ordenarLista(filtrados);
+    }, [todosJogos, filtrarLista, ordenarLista]);
 
     // BUSCAR
     const carregarJogosByBolaoID = useCallback(async () => {
@@ -39,14 +90,10 @@ export const useJogos = (bolaoId: string | null = null) => {
 
     // ADICIONAR
     const addJogo = async (timeA: string, timeB: string) => {
-        if (!bolaoId) {
-            alert("Necessário selecionar um bolão para adicionar jogos.");
-            return;
-        }
         try {
             setLoading(true);
-            await JogosService.add(bolaoId, timeA, timeB);
-            await carregarJogosByBolaoID();
+            await JogosService.add(timeA, timeB);
+            await carregarJogos();
         } catch (error: any) {
             alert("Erro ao adicionar jogo: " + (error.message || ""));
         } finally {
@@ -76,12 +123,28 @@ export const useJogos = (bolaoId: string | null = null) => {
     }, [carregarJogosByBolaoID, carregarJogos, bolaoId]);
 
     return { 
-        jogos, 
+        // Listas já filtradas
+        jogos: jogosFiltrados, 
+        todosJogos: todosJogosFiltrados,
+
+        // Dados brutos
+        totalJogosCount: jogos.length,
+
+        // Ações
         addJogo, 
         deleteJogo,
         loading,
-        todosJogos,
         carregarJogos,
-        refresh: carregarJogosByBolaoID 
+        refresh: carregarJogosByBolaoID,
+
+        // Controles de filtro
+        filtros: {
+            status: filtroStatus,
+            setStatus: setFiltroStatus,
+            data: filtroData,
+            setData: setFiltroData,
+            ordem: ordem,         
+            setOrdem: setOrdem
+        }
     };
 }

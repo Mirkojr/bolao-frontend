@@ -11,11 +11,15 @@ export const JogosService = {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },
 
-    add: async (bolaoId: string, timeA: string, timeB: string): Promise<Jogo> => {
+    add: async (timeA: string, timeB: string): Promise<Jogo> => {
         // O backend deve buscar o ID dos times pelo nome ou criar se não existir
-        return httpClient.post<Jogo>(`/boloes/${bolaoId}/jogos`, { 
+        return httpClient.post<Jogo>(`/jogos`, { 
             timeA: timeA, 
             timeB: timeB 
         });
+    },
+    
+    delete: async (bolaoId: string, jogoId: string): Promise<void> => {
+        return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
     }
 };
