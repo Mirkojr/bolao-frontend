@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ParticipantesService } from "@/shared/services/participantes-service";
+import { participantesService } from "@/shared/services/participantes-service";
 import type { Participante } from "@/shared/interfaces/participante";
 
 export const useParticipantes = (bolaoId: string | undefined) => {
@@ -12,7 +12,7 @@ export const useParticipantes = (bolaoId: string | undefined) => {
         if (!bolaoId) return;
         try {
             setLoading(true); 
-            const dados = await ParticipantesService.getByBolaoId(bolaoId);
+            const dados = await participantesService.getByBolaoId(bolaoId);
             setParticipantes(dados);
         } catch (error) {
             console.error("Erro ao carregar participantes", error);
@@ -26,7 +26,7 @@ export const useParticipantes = (bolaoId: string | undefined) => {
         if (!bolaoId) return;
         try {
             setLoading(true);
-            await ParticipantesService.add(bolaoId, nome);
+            await participantesService.add(bolaoId, nome);
             await carregarParticipantes();
         } catch (error: any) {
             alert("Erro ao adicionar: " + (error.message || ""));
@@ -41,7 +41,7 @@ export const useParticipantes = (bolaoId: string | undefined) => {
         try {
             setLoading(true);
 
-            await ParticipantesService.remove(bolaoId, id);
+            await participantesService.remove(bolaoId, id);
             setParticipantes((participantes) => participantes.filter(p => p.id !== id));
 
         } catch (error: any) {

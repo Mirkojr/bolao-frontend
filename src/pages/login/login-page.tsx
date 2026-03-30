@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Ajuste os caminhos de importação para bater com a sua nova estrutura de pastas!
 import { authService } from './services/login-service';
 import { useAuth } from '@/context/AuthContext';
 import { ApiError } from '@/shared/api/httpClient';

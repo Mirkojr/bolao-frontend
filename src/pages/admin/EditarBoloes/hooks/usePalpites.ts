@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Palpite } from "@/shared/interfaces/palpite";
-import { PalpitesService } from "@/shared/services/palpite-service";
+import { palpitesService } from "@/shared/services/palpite-service";
 
 export const usePalpites = (bolaoId: string | undefined) => {
     
@@ -11,7 +11,7 @@ export const usePalpites = (bolaoId: string | undefined) => {
     const carregarPalpites = useCallback(async () => {
         if (!bolaoId) return;
         try {
-            const p = await PalpitesService.getByBolaoId(bolaoId);
+            const p = await palpitesService.getByBolaoId(bolaoId);
             setPalpites(p);
         } catch (error) {
             console.error("Erro ao carregar palpites", error);
@@ -23,7 +23,7 @@ export const usePalpites = (bolaoId: string | undefined) => {
         if (!bolaoId) return;
         try {
             setLoading(true);
-            await PalpitesService.save(bolaoId, {
+            await palpitesService.save(bolaoId, {
                 participante_id: participanteId,
                 jogo_id: jogoId,
                 gol_a_palpite: pa,
