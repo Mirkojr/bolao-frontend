@@ -1,13 +1,13 @@
-// src/pages/login/Login.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Ajuste os caminhos de importação para bater com a sua nova estrutura de pastas!
 import { authService } from './services/login-service';
 import { useAuth } from '@/context/AuthContext';
+import { ApiError } from '@/shared/api/httpClient';
 
-
-const Login = () => {
+export const Login = () => {
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -23,26 +23,27 @@ const Login = () => {
     try {
       const resposta = await authService.login(email, senha);
     
-      if (resposta.token) {
-        
-        alert('Login com sucesso!');
+      // Verifica se o backend devolveu os dados corretamente
+      if (resposta.token && resposta.user) {
         localStorage.setItem('meu_token', resposta.token); 
-        
         login(resposta.user); 
-        
         navigate('/admin/bolao-crud');
     
       } else {
-        console.warn('Login funcionou, mas sem token.');
+        setErro('Erro de comunicação: Dados incompletos.');
       }
 
-      } catch (error: any) {
-        console.error(error);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApiError || error instanceof Error) {
         setErro(error.message);
-      } finally {
-        setLoading(false);
+      } else {
+        setErro('Ocorreu um erro inesperado ao tentar logar.');
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -77,7 +78,7 @@ const Login = () => {
             />
           </div>
 
-          {/* Mensagem de Erro */}
+          {/* Mensagem de Erro UI */}
           {erro && (
             <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
               {erro}
@@ -88,7 +89,7 @@ const Login = () => {
             type="submit"
             disabled={loading}
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-              ${loading ? 'bg-green-400' : 'bg-green-600 hover:bg-green-700'} 
+              ${loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} 
               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors`}
           >
             {loading ? 'Entrando...' : 'Entrar'}
@@ -98,5 +99,3 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
