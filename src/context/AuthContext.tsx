@@ -1,7 +1,14 @@
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from "react";
 import type { User } from "@/shared/interfaces/user";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-
 import { AUTH_LOGOUT_EVENT } from "@/shared/api/httpClient";
+
+// ==========================================
+// 1. CONSTANTES E TIPAGENS
+// ==========================================
+const STORAGE_KEYS = {
+    USER: 'u_data',
+    TOKEN: 'meu_token',
+} as const;
 
 interface AuthContextType {
     user: User | null;
@@ -10,51 +17,67 @@ interface AuthContextType {
     logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// FUNÇÕES HELPERS 
+const getStoredUser = (): User | null => {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEYS.USER);
+        return stored ? JSON.parse(stored) : null;
+    } catch {
+        return null; 
+    }
+};
+
+const clearAuthData = () => {
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(() => {
-        const storedUser = localStorage.getItem('u_data');
-        return storedUser ? JSON.parse(storedUser) : null;
-    });
+    
+    // -- ESTADO --
+    const [user, setUser] = useState<User | null>(getStoredUser);
 
-    const login = (userData: User) => {
-        const userToSave = {
-            id: String(userData.id),
-            nome: userData.nome,
-            pontuacao_total: userData.pontuacao_total,
-            role: userData.role,
-        };
-        setUser(userToSave);
-        localStorage.setItem('u_data', JSON.stringify(userData));
-    };
-
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('meu_token');
-        localStorage.removeItem('u_data'); 
-    };
-
-    // Escuta eventos de logout globais
-    useEffect(() => {
-        const handleLogoutRequest = () => {
-            logout();
-        };
+    // -- AÇÕES --
+    const login = useCallback((userData: User) => {
+        const userToSave = { ...userData, id: String(userData.id) };
         
-        window.addEventListener(AUTH_LOGOUT_EVENT, handleLogoutRequest);
+        setUser(userToSave);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userToSave));
+    }, []);
 
-        return () => {
-            window.removeEventListener(AUTH_LOGOUT_EVENT, handleLogoutRequest);
-        };
-    }, []); 
+    const logout = useCallback(() => {
+        setUser(null);
+        clearAuthData();
+    }, []);
+
+    // -- EFEITOS --
+    useEffect(() => {
+        window.addEventListener(AUTH_LOGOUT_EVENT, logout);
+        return () => window.removeEventListener(AUTH_LOGOUT_EVENT, logout);
+    }, [logout]); 
+
+    // -- RETORNO --
+    const contextValue = useMemo(() => ({
+        user,
+        isAuthenticated: !!user,
+        login,
+        logout
+    }), [user, login, logout]);
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
 };
 
+
 export const useAuth = () => {
-    return useContext(AuthContext);
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error("useAuth deve ser usado obrigatoriamente dentro de um AuthProvider");
+    }
+    return context;
 };

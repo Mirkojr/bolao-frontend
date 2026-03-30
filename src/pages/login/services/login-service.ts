@@ -1,21 +1,13 @@
-const API_URL = import.meta.env.VITE_API_URL ;
+import { httpClient } from '@/shared/api/httpClient';
+import type { User } from '@/shared/interfaces/user';
+
+export interface LoginResponse {
+    token: string;
+    user: User;
+}
 
 export const authService = {
-  
-  login: async (email: string, senha: string) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, senha }), 
-    });
-
-    if (!response.ok) {
-      const erro = await response.json().catch(() => ({}));
-      throw new Error(erro.message || 'Erro ao fazer login');
-    }
-
-    return response.json();
+  login: (email: string, senha: string) => {
+      return httpClient.post<LoginResponse>('/auth/login', { email, senha });
   },
 };
