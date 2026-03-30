@@ -1,6 +1,6 @@
 // features/jogos/components/secao-jogos.tsx
 import { useState } from 'react';
-import { AddJogoButton } from '@/pages/adicionar-time/components/add-jogo-button';
+import { AddJogoButton } from '@/pages/AdicionarTime/components/add-jogo-button';
 import { JogosList } from './jogos-list';
 import { ModalNovoJogo } from './modal-novo-jogo';
 

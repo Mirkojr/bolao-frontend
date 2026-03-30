@@ -24,29 +24,25 @@ const Login = () => {
       const resposta = await authService.login(email, senha);
     
       if (resposta.token) {
+        
+        alert('Login com sucesso!');
+        localStorage.setItem('meu_token', resposta.token); 
+        
+        login(resposta.user); 
+        
+        navigate('/admin/bolao-crud');
+    
+      } else {
+        console.warn('Login funcionou, mas sem token.');
+      }
 
-        if (resposta.user) {
-          alert('Login com sucesso!');
-          localStorage.setItem('meu_token', resposta.token); 
-          
-          login(resposta.user); 
-          
-          navigate('/admin/bolao-crud');
-        } else{
-          console.error("O Token veio, mas o User veio vazio!");
-          setErro("Erro no sistema: Usuário não identificado.");
-        }
-    } else {
-      console.warn('Login funcionou, mas sem token.');
-    }
-
-    } catch (error: any) {
-      console.error(error);
-      setErro(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      } catch (error: any) {
+        console.error(error);
+        setErro(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

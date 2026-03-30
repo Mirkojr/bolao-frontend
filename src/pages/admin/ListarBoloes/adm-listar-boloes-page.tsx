@@ -1,5 +1,5 @@
 import { BoloesTable } from "./components/boloes-table";
-import { useBoloes } from "../../shared/hooks/useBoloes"; 
+import { useBoloes } from "../../../shared/hooks/useBoloes"; 
 import { AddBolaoForm } from "./components/add-bolao";
 import { useAuth } from "@/context/AuthContext";
 

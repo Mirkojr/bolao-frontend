@@ -28,5 +28,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/pages/adm-editar-boloes/features/secao-participantes/.tsx"]
+  "include": ["src", "src/pages/admin/EditarBoloes/features/secao-participantes/.tsxo-participantes.tsx"]
 }

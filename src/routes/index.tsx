@@ -2,11 +2,11 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 
 import Home from '@/pages/home';
-import AdminBolaoPage from '@/pages/adm-listar-boloes/adm-listar-boloes-page';
+import AdminBolaoPage from '@/pages/admin/listarBoloes/adm-listar-boloes-page';
 import Login from '@/pages/login/login-page';
-import EditarBolaoPage from '@/pages/adm-editar-boloes/adm-editar-boloes-page';
+import EditarBolaoPage from '@/pages/admin/EditarBoloes/adm-editar-boloes-page';
 import NotFoundPage from '@/pages/not-found/not-found-page';
-import { AdicionarTimePage } from '@/pages/adicionar-time/adicionar-time';
+import { AdicionarTimePage } from '@/pages/AdicionarTime/adicionar-time';
 
 import { MainLayout } from '@/layout/main-layout';
 

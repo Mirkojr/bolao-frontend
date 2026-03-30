@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button } from "../../../../shared/components/button/Button";
-import { Input } from "../../../../shared/components/input/Input";
+import { Button } from "../../../../../shared/components/button/Button";
+import { Input } from "../../../../../shared/components/input/Input";
 
 // --- FORMULÁRIO DE PARTICIPANTE ---
 interface AddParticipanteFormProps {
