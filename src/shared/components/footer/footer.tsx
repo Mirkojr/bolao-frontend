@@ -1,8 +1,11 @@
 
 export const Footer = () => {
+
+    const currentYear = new Date().getFullYear();
+
     return (
         <footer className="py-6 text-center text-gray-400 text-sm">
-                &copy; 2025 Sistema de Bolão. Todos os direitos reservados.
+                &copy; {currentYear} Sistema de Bolão. Todos os direitos reservados.
         </footer>
     )
 };
