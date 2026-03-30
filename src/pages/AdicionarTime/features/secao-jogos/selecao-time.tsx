@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Input } from '@/shared/components/input/Input';
-import { Card, CardTitle } from '@/shared/components/card/Card';
-import { Button } from '@/shared/components/button/Button';
+import { Input } from '@/shared/components/Input';
+import { Card, CardTitle } from '@/shared/components/Card';
+import { Button } from '@/shared/components/Button';
 
 import { type Time } from '@/shared/interfaces/time';
 

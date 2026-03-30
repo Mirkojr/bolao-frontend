@@ -1,4 +1,4 @@
-import { useState, type HTMLAttributes } from "react"
+import { type HTMLAttributes } from "react"
 
 interface ModalProps extends HTMLAttributes<HTMLDivElement>{
     isOpen: boolean,

@@ -1,7 +1,7 @@
 import type { Participante } from "@/shared/interfaces/participante";
-import { Card } from "../../../../../shared/components/card/Card";
-import { Button } from "../../../../../shared/components/button/Button";
-import ModalGenerico from "@/shared/components/modal/Modal";
+import { Card } from "../../../../../shared/components/Card";
+import { Button } from "../../../../../shared/components/Button";
+import ModalGenerico from "@/shared/components/Modal";
 import { useState } from "react";
 
 interface ParticipanteListProps {

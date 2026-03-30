@@ -1,8 +1,8 @@
 // features/jogos/components/modal-novo-jogo.tsx
 import { useState, useEffect } from 'react';
-import ModalGenerico from '@/shared/components/modal/Modal';
-import { CardTitle } from '@/shared/components/card/Card';
-import { Button } from '@/shared/components/button/Button';
+import ModalGenerico from '@/shared/components/Modal';
+import { CardTitle } from '@/shared/components/Card';
+import { Button } from '@/shared/components/Button';
 import { useTimes } from '@/shared/hooks/useTimes';
 import { SelecaoTime } from './selecao-time'; 
 
