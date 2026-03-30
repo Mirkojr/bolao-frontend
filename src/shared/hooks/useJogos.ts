@@ -88,7 +88,7 @@ export const useJogos = (bolaoId: string | null = null) => {
         }
     }, []);
 
-    // ADICIONAR
+    // ADICIONAR UM JOGO QUALQUER
     const addJogo = async (timeA: string, timeB: string) => {
         try {
             setLoading(true);
@@ -97,6 +97,20 @@ export const useJogos = (bolaoId: string | null = null) => {
         } catch (error: any) {
             alert("Erro ao adicionar jogo: " + (error.message || ""));
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const addJogoToBolao = async (jogoId: string) => {
+        if (!bolaoId) return;
+        try {
+            setLoading(true);
+            await JogosService.addJogoToBolao(bolaoId, jogoId);
+            await carregarJogosByBolaoID();
+        } catch (error: any) {
+            alert("Erro ao adicionar jogo ao bolão: " + (error.message || ""));
+        }
+        finally {
             setLoading(false);
         }
     };
@@ -132,11 +146,12 @@ export const useJogos = (bolaoId: string | null = null) => {
 
         // Ações
         addJogo, 
+        addJogoToBolao,
         deleteJogo,
         loading,
         carregarJogos,
         refresh: carregarJogosByBolaoID,
-
+        
         // Controles de filtro
         filtros: {
             status: filtroStatus,

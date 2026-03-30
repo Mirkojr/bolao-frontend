@@ -14,6 +14,7 @@ import { Section } from "./components/Section";
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secao-participantes"; 
 import { useState } from "react";
+import { useBoloes } from "@/shared/hooks/useBoloes";
 
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams(); 
@@ -22,9 +23,11 @@ export const EditarBolaoPage = () => {
     
     // Hooks de Dados
     const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
-    const { jogos, addJogo, loading: loadingJogos } = useJogos(bolaoId);
+    const { jogos, addJogoToBolao, loading: loadingJogos } = useJogos(bolaoId);
+    const { todosJogos } = useJogos();
     const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
-    
+
+
     const bolaoState = location.state?.bolaoData;
     const nomeBolao = bolaoState?.nome || " Bolão ";
 
@@ -54,7 +57,32 @@ export const EditarBolaoPage = () => {
             </h1>
 
             <Section title="Adicionar Jogos" className="mb-6">
-                Adicionar jogos ao bolão ( sera feito ainda )
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <p className="text-gray-600">
+                            Adicione jogos ao bolão para que os participantes possam fazer seus palpites.
+                        </p>
+                        <div>
+                            <select
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                onChange={async (e) => {
+                                    const jogoId = e.target.value;
+                                    if (jogoId) {
+                                        await addJogoToBolao(jogoId);
+                                        e.target.value = ""; // Reseta o select
+                                    }
+                                }}
+                            >
+                                <option value="">Selecione um jogo para adicionar</option>
+                                {todosJogos.map((jogo) => (
+                                    <option key={jogo.id} value={jogo.id}>
+                                        {jogo.timeA?.nome || "Time A"} vs {jogo.timeB?.nome || "Time B"} - {new Date(jogo.data_jogo).toLocaleDateString()}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </Section>
 
             <Section title="Tabela de Palpites" className="mb-6">

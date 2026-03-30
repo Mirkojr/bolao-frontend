@@ -19,6 +19,10 @@ export const JogosService = {
         });
     },
     
+    addJogoToBolao: async (bolaoId: string, jogoId: string): Promise<void> => {
+        return httpClient.post<void>(`/boloes/${bolaoId}/jogos/${jogoId}`, {});
+    },
+
     delete: async (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
     }
