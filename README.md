@@ -1,80 +1,63 @@
-# React + TypeScript + Vite
+# Sistema de Bolão - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação frontend para o gerenciamento e participação em bolões esportivos do meu pai. 
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **[React](https://reactjs.org/)** 
+- **[Vite](https://vitejs.dev/)** 
+- **[TypeScript](https://www.typescriptlang.org/)** 
+- **[Tailwind CSS](https://tailwindcss.com/)** 
+- **[React Router DOM](https://reactrouter.com/)**
 
-## React Compiler
+## Pré-requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Antes de começar, você vai precisar ter as seguintes ferramentas instaladas na sua máquina:
+- [Git](https://git-scm.com)
+- [Node.js](https://nodejs.org/en/) (versão 18 ou superior)
+- Backend da aplicação rodando via [Docker](https://www.docker.com/)
 
-## Expanding the ESLint configuration
+## Como rodar o projeto localmente
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**1. Instale as dependências:**
+\`\`\`bash
+npm install
+\`\`\`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**2. Configure as Variáveis de Ambiente:**
+Crie um arquivo \`.env\` na raiz do projeto e adicione a URL do backend:
+\`\`\`env
+VITE_API_URL=http://localhost:3000 
+\`\`\`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**3. Execute a aplicação em modo de desenvolvimento:**
+\`\`\`bash
+npm run dev
+\`\`\`
+O servidor iniciará localmente. Acesse \`http://localhost:5173/\` no seu navegador.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Arquitetura do Projeto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+O projeto segue uma arquitetura baseada em divisão por responsabilidades 
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-## Using Tailwind CSS
-To use Tailwind CSS with this template, follow these steps:
-1. Install Tailwind CSS and its dependencies via npm:
-   ```bash
-   npm install -D tailwindcss postcss autoprefixer
-   npx tailwindcss init -p
-   ```
+\`\`\`text
+src/
+ ├── layout/         # Layouts base da aplicação (NavBar, Footer, Sidebars)
+ ├── pages/          # Páginas roteáveis do sistema
+ ├── routes/         # Configuração do React Router
+ └── shared/         # Recursos globais da aplicação
+      ├── components/# Componentes de UI genéricos (Button, Input, Modal)
+      ├── hooks/     # Custom Hooks (useBoloes, useJogos)
+      ├── interfaces/# Tipagens TypeScript e Contratos
+      └── services/  # Camada de comunicação com a API (HTTP Client e endpoints)
+\`\`\`
+
+## Rodando o Backend
+
+Para que o login e as listagens funcionem, lembre-se de subir os containers do backend em um terminal separado:
+\`\`\`bash
+cd bolao-backend-api
+docker compose up -d
+\`\`\`
