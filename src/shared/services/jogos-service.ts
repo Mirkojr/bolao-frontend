@@ -1,17 +1,17 @@
 import { httpClient } from '@/shared/api/httpClient';
 import type { Jogo } from '@/shared/interfaces/jogo';
  
-export const JogosService = {
+export const jogosService = {
 
-    getAll: async (): Promise<Jogo[]> => {
+    getAll: (): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/jogos`);
     },
 
-    getByBolaoId: async (bolaoId: string): Promise<Jogo[]> => {
+    getByBolaoId: (bolaoId: string): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },
 
-    add: async (timeA: string, timeB: string): Promise<Jogo> => {
+    add: (timeA: string, timeB: string): Promise<Jogo> => {
         // O backend deve buscar o ID dos times pelo nome ou criar se não existir
         return httpClient.post<Jogo>(`/jogos`, { 
             timeA: timeA, 
@@ -19,11 +19,11 @@ export const JogosService = {
         });
     },
     
-    addJogoToBolao: async (bolaoId: string, jogoId: string): Promise<void> => {
+    addJogoToBolao: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.post<void>(`/boloes/${bolaoId}/jogos/${jogoId}`, {});
     },
 
-    delete: async (bolaoId: string, jogoId: string): Promise<void> => {
+    delete: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
     }
 };

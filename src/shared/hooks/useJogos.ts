@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Jogo } from "@/shared/interfaces/jogo";
-import { JogosService } from "@/shared/services/jogos-service";
+import { jogosService } from "@/shared/services/jogos-service";
 
 export type StatusFilter = 'todos' |'finalizado' | 'agendado'
 export type OrdemFilter = 'crescente' | 'decrescente';
@@ -68,7 +68,7 @@ export const useJogos = (bolaoId: string | null = null) => {
             return;
         }
         try {
-            const j = await JogosService.getByBolaoId(bolaoId);
+            const j = await jogosService.getByBolaoId(bolaoId);
             setJogos(j);
         } catch (error) {
             console.error("Erro ao carregar jogos", error);
@@ -79,7 +79,7 @@ export const useJogos = (bolaoId: string | null = null) => {
     const carregarJogos = useCallback(async () => {
         setLoading(true);
         try {
-            const j = await JogosService.getAll();
+            const j = await jogosService.getAll();
             setTodosJogos(j);
         } catch (error) {
             console.error("Erro ao carregar jogos", error);
@@ -92,7 +92,7 @@ export const useJogos = (bolaoId: string | null = null) => {
     const addJogo = async (timeA: string, timeB: string) => {
         try {
             setLoading(true);
-            await JogosService.add(timeA, timeB);
+            await jogosService.add(timeA, timeB);
             await carregarJogos();
         } catch (error: any) {
             alert("Erro ao adicionar jogo: " + (error.message || ""));
@@ -105,7 +105,7 @@ export const useJogos = (bolaoId: string | null = null) => {
         if (!bolaoId) return;
         try {
             setLoading(true);
-            await JogosService.addJogoToBolao(bolaoId, jogoId);
+            await jogosService.addJogoToBolao(bolaoId, jogoId);
             await carregarJogosByBolaoID();
         } catch (error: any) {
             alert("Erro ao adicionar jogo ao bolão: " + (error.message || ""));
@@ -119,7 +119,7 @@ export const useJogos = (bolaoId: string | null = null) => {
         if (!bolaoId) return;
         try {
             setLoading(true);
-            await JogosService.delete(bolaoId, jogoId);
+            await jogosService.delete(bolaoId, jogoId);
             await carregarJogosByBolaoID();
         } catch (error: any) {
             alert("Erro ao deletar jogo: " + (error.message || ""));

@@ -1,8 +1,8 @@
 import { httpClient } from '@/shared/api/httpClient';
 import type { Palpite } from '@/shared/interfaces/palpite';
 
-export const PalpitesService = {
-    getByBolaoId: async (bolaoId: string): Promise<Palpite[]> => {
+export const palpitesService = {
+    getByBolaoId: (bolaoId: string): Promise<Palpite[]> => {
         return httpClient.get<Palpite[]>(`/boloes/${bolaoId}/palpites`);
     },
 

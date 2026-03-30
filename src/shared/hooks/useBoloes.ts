@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Bolao } from "@/shared/interfaces/bolao";
-import { BoloesService } from "@/shared/services/bolao-service";
+import { boloesService } from "@/shared/services/bolao-service";
 
 // Hook para gerenciar a lista de bolões, criação, deleção e atualização
 export const useBoloes = () => {
@@ -11,7 +11,7 @@ export const useBoloes = () => {
     const carregarBoloes = async (isSilent = false) => {
         if (!isSilent) setLoading(true);
         try {
-            const dados = await BoloesService.getAll();
+            const dados = await boloesService.getAll();
             setBoloes(dados);
         } catch (error) {
             console.error("Erro ao carregar bolões:", error);
@@ -30,7 +30,7 @@ export const useBoloes = () => {
 
         // Se não achou busca individualmente na API
         try {
-            const bolaoDaApi = await BoloesService.getById(id);
+            const bolaoDaApi = await boloesService.getById(id);
             return bolaoDaApi;
         } catch (error) {
             console.error(`Erro ao buscar bolão ${id}:`, error);
@@ -41,7 +41,7 @@ export const useBoloes = () => {
     const criarBolao = async (nome: string) => {
         setCreating(true);
         try {
-            await BoloesService.create({ nome });
+            await boloesService.create({ nome });
             await carregarBoloes(true);
         } catch(error) {
             console.error("Erro ao criar bolão:", error);

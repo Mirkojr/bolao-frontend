@@ -3,7 +3,7 @@ import type { User } from '@/shared/interfaces/user';
 
 
 export const usersService = {
-    getAll: async (): Promise<User> => {
+    getAll:  (): Promise<User> => {
         return httpClient.get<User>('/users');
     },
 }
