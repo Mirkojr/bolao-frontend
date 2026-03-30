@@ -1,6 +1,6 @@
 import type { Participante } from "@/shared/interfaces/participante";
-import { AddParticipanteForm } from "./add-participante-form";
-import { ParticipanteList } from "./participante-list";
+import { AddParticipanteForm } from "./addParticipanteForm";
+import { ParticipanteList } from "./participanteList";
 
 interface ParticipantesSectionProps {
     participantes: Participante[];

@@ -3,22 +3,18 @@ import { EmptyState } from "../../components/EmptyState";
 import { TeamDisplay } from "../../components/TeamDisplay";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import type { Participante } from "@/shared/interfaces/participante";
-import type { Palpite } from "@/shared/interfaces/palpite";
 
 const getTeamName = (time: any) => {
     if (!time) return '?';
     return typeof time === 'string' ? time : (time.sigla || time.nome || '?');
 };
 
-
 interface BolaoMatrixTableProps {
     jogos: Jogo[];
     participantes: Participante[];
-    palpites: Palpite[];
-    onSavePalpite: (partId: string, jogoId: string, pa: number, pb: number) => void;
 }
 
-export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite }: BolaoMatrixTableProps) => {
+export const BolaoMatrixTable = ({ jogos, participantes }: BolaoMatrixTableProps) => {
     if (participantes.length === 0) {
         return (
             <EmptyState
@@ -32,7 +28,7 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
         <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
             <table className="w-full text-sm text-left">
 
-                {/* Cabeçalho da tabela */}
+                {/* Cabeçalho da tabela  */}
                 <thead className="bg-gray-100 text-xs uppercase text-gray-600">
                     <tr>
                         <th className="px-4 py-3 sticky left-0 bg-gray-100 border-r z-10">
@@ -57,8 +53,6 @@ export const BolaoMatrixTable = ({ jogos, participantes, palpites, onSavePalpite
                             key={p.id}
                             participante={p}
                             jogos={jogos} 
-                            palpites={palpites}
-                            onSave={onSavePalpite}
                         />
                     ))}
                 </tbody>

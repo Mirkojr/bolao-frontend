@@ -1,28 +1,50 @@
-import { useContext, createContext } from "react";
+import { createContext, useContext, useMemo, useCallback, type ReactNode } from "react";
 import type { Palpite } from "@/shared/interfaces/palpite";
 
-interface BolaoContextData{
-    palpites : Palpite[],
-    onSavePalpite: (partId: string, jogoId: string, pa: number, pb: number) => Promise<void>,
-    getPalpite: (partId: number, jogoId: number) => Palpite | undefined;
+interface BolaoContextData {
+    palpites: Palpite[];
+    onSavePalpite: (partId: string, jogoId: string, pa: number, pb: number) => Promise<void>;
+    // Permiti string e number aqui pra evitar dor de cabeça com IDs vindo da URL
+    getPalpite: (partId: number | string, jogoId: number | string) => Palpite | undefined;
 }
 
-const BolaoContext = createContext({} as BolaoContextData);
+interface BolaoProviderProps {
+    children: ReactNode;
+    palpites: Palpite[];
+    onSavePalpite: (partId: string, jogoId: string, pa: number, pb: number) => Promise<void>;
+}
 
-export const useBolaoContext = useContext(BolaoContext);
+const BolaoContext = createContext<BolaoContextData | undefined>(undefined);
 
-export const BolaoProvider = ({ children, palpites, onSavePalpite }: any) => {
+export const BolaoProvider = ({ children, palpites, onSavePalpite }: BolaoProviderProps) => {
 
-    const palpiteMap = new Map<string, Palpite>();
-    palpites.forEach((p: Palpite) => palpiteMap.set(`${p.participante_id}-${p.jogo_id}`, p));
+    const palpiteMap = useMemo(() => {
+        const map = new Map<string, Palpite>();
+        palpites.forEach((p) => map.set(`${p.participante_id}-${p.jogo_id}`, p));
+        return map;
+    }, [palpites]);
 
-    const getPalpite = (partId: number, jogoId: number) => {
+    const getPalpite = useCallback((partId: number | string, jogoId: number | string) => {
         return palpiteMap.get(`${partId}-${jogoId}`);
-    };
+    }, [palpiteMap]);
+
+    const contextValue = useMemo(() => ({
+        palpites,
+        onSavePalpite,
+        getPalpite
+    }), [palpites, onSavePalpite, getPalpite]);
     
     return (
-        <BolaoContext.Provider value={{ palpites, onSavePalpite, getPalpite }}>
-        {children}
+        <BolaoContext.Provider value={contextValue}>
+            {children}
         </BolaoContext.Provider>
     );
+};
+
+export const useBolaoContext = () => {
+    const context = useContext(BolaoContext);
+    if (context === undefined) {
+        throw new Error("useBolaoContext deve ser usado obrigatoriamente dentro de um BolaoProvider");
+    }
+    return context;
 };
