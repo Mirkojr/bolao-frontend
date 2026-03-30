@@ -12,7 +12,6 @@ interface MatrixRowProps {
 
 export const MatrixRow = ({ participante, jogos }: MatrixRowProps) => {
     
-    // 4. Puxamos a lógica voadora do nosso contexto
     const { getPalpite, onSavePalpite } = useBolaoContext();
 
     return (
@@ -21,7 +20,7 @@ export const MatrixRow = ({ participante, jogos }: MatrixRowProps) => {
                 {participante.nome}
             </td>
             {jogos.map(jogo => {
-                // 5. Chamada O(1) do Map. Retorna instantâneo sem fazer laço de repetição!
+                
                 const palpite = getPalpite(participante.id, jogo.id); 
 
                 return (
