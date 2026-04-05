@@ -97,3 +97,33 @@ src/
 
 - O token de autenticação é armazenado no navegador e enviado automaticamente nas requisições autenticadas.
 - Se a interface não carregar dados, verifique primeiro se o backend está rodando e se `VITE_API_URL` está correto.
+
+### Demonstração Visual
+
+#### 1. Tela Inicial e Login
+Tela de login simples e funcional, com validação de credenciais 
+
+![Tela Inicial e Login](assets/tela-inicial.png)
+![Tela Inicial e Login](assets/tela-login.png)
+
+#### 2. Gestão de Placar (Admin)
+O administrador tem uma ferramenta exclusiva para atualizar os resultados reais dos jogos direto nos cards.
+![Demonstração da Atualização do Placar](assets/update-placar-demo.gif)
+
+#### 3. Gestão de Participantes
+Fluxo dinâmico para remover participantes do bolão com confirmação visual.
+![Demonstração da Exclusão de Participante](assets/exclusao-participante-demo.gif)
+
+#### 4. Visão Geral de Times e Jogos
+Central de gerenciamento onde o admin visualiza todos os times cadastrados e a lista de partidas.
+![Tela Seção Times e Jogos](assets/tela-secao-times-jogos.png)
+
+### 5. Tabela de Palpites 
+Tabela clara e organizada para visualizar os palpites dos participantes, com destaque para os resultados corretos.
+
+Casos:
+- Palpite correto: Destaque verde
+- Palpite incorreto: Destaque vermelho
+- Palpite parcialmente correto: Destaque azul
+- Palpite não avaliado: Sem destaque
+![Tabela de Palpites](assets/tabela-palpites.png)
