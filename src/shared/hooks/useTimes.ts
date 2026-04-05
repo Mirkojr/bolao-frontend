@@ -15,9 +15,29 @@ export const useTimes = () => {
         }
     }, [])
 
+    const criarTime = useCallback(async (dadosTime: Partial<Time>) => {
+        try {
+            const novoTime = await timeService.add(dadosTime);
+            setAllTeams(prev => [...prev, novoTime]);
+        } catch (error) {
+            console.error("Erro ao criar time.", error)
+        }
+    }, [])
+
+    const deletarTime = useCallback(async (timeId: string) => {
+        try {
+            await timeService.delete(timeId);
+            setAllTeams(prev => prev.filter(time => time.id !== timeId));
+        } catch (error) {
+            console.error("Erro ao deletar time.", error)
+        }
+    }, [])
+
     return {
         allTeams,
         setAllTeams,
-        carregarTimes
+        carregarTimes, 
+        criarTime,
+        deletarTime
     }
 }

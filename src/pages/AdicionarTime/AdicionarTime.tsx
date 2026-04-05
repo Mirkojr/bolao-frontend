@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { SecaoJogos } from './features/secao-jogos/secao-jogos'
 import { useJogos } from "@/shared/hooks/useJogos";
+import { CriarTime } from './features/secao-jogos/criar-time';
 
 export const AdicionarTimePage = () => {
 
@@ -19,7 +20,8 @@ export const AdicionarTimePage = () => {
 
     return (
         <>
-            <div className={"pt-5"}>
+            <div className={"flex flex-col items-center gap-8 p-6"}>
+                <CriarTime/>
                 <SecaoJogos
                     jogos= {todosJogos}
                     loading={loadingJogos}
