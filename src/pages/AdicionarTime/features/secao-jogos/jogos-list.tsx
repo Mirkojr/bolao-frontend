@@ -1,9 +1,12 @@
+import type { Jogo } from '@/shared/interfaces/jogo';
+
 interface JogosListProps {
-    jogos: any[];
+    jogos: Jogo[];
     loading: boolean;
+    onJogoClick?: (jogo: Jogo) => void;
 }
 
-export const JogosList = ({ jogos, loading }: JogosListProps) => {
+export const JogosList = ({ jogos, loading, onJogoClick }: JogosListProps) => {
 
 
     const formatarData = (dataString: string | Date) => {
@@ -39,7 +42,12 @@ export const JogosList = ({ jogos, loading }: JogosListProps) => {
             ) : (
                 <div className="space-y-3">
                     {jogos.map((jogo) => (
-                        <div key={jogo.id} className="bg-white border rounded-lg shadow-sm p-4 flex flex-col items-center">
+                        <button
+                            key={jogo.id}
+                            type="button"
+                            onClick={() => onJogoClick?.(jogo)}
+                            className="bg-white border rounded-lg shadow-sm p-4 flex flex-col items-center w-full text-left transition hover:border-blue-300 hover:shadow-md cursor-pointer"
+                        >
                             
                             {/* Data */}
                             <span className="text-xs text-gray-500 mb-2">
@@ -78,7 +86,7 @@ export const JogosList = ({ jogos, loading }: JogosListProps) => {
                                     {jogo.status || 'AGENDADO'}
                                 </span>
                             </div>
-                        </div>
+                        </button>
                     ))}
                 </div>
             )}

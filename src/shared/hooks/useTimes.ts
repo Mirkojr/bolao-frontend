@@ -33,11 +33,21 @@ export const useTimes = () => {
         }
     }, [])
 
+    const atualizarTime = useCallback(async (timeId: string, dadosTime: Partial<Time>) => {
+        try {
+            const timeAtualizado = await timeService.update(timeId, dadosTime);
+            setAllTeams(prev => prev.map(time => time.id === timeId ? timeAtualizado : time));
+        } catch (error) {
+            console.error("Erro ao atualizar time.", error)
+        }
+    }, [])
+
     return {
         allTeams,
         setAllTeams,
         carregarTimes, 
         criarTime,
-        deletarTime
+        deletarTime, 
+        atualizarTime
     }
 }

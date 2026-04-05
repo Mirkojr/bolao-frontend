@@ -14,6 +14,7 @@ export const AdicionarTimePage = () => {
     const { 
         todosJogos, 
         addJogo, 
+        updateJogo,
         loading: loadingJogos,
         filtros
      } = useJogos();
@@ -26,6 +27,7 @@ export const AdicionarTimePage = () => {
                     jogos= {todosJogos}
                     loading={loadingJogos}
                     onAddJogo={addJogo}
+                    onUpdateJogo={updateJogo}
                     filtros={filtros}
                 />
             </div>

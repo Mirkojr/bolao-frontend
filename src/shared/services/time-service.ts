@@ -12,5 +12,9 @@ export const timeService = {
 
     delete: (timeId: string): Promise<void> => {
         return httpClient.delete(`/times/${timeId}`);
-    }
+    },
+
+    update: (timeId: string, dadosTime: Partial<Time>): Promise<Time> => {
+        return httpClient.put<Time>(`/times/${timeId}`, dadosTime);
+    },
 }

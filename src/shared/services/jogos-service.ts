@@ -25,5 +25,9 @@ export const jogosService = {
 
     delete: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
-    }
+    },
+
+    update: (jogoId: string, dadosJogo: Partial<Jogo>): Promise<Jogo> => {
+        return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
+    },
 };

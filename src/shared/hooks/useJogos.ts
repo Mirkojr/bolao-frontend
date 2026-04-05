@@ -128,6 +128,19 @@ export const useJogos = (bolaoId: string | null = null) => {
         }
     };
 
+    const updateJogo = async (jogoId: string, dadosJogo: Partial<Jogo>) => {
+        try {
+            setLoading(true);
+            await jogosService.update(jogoId, dadosJogo);
+            await carregarJogos();
+            await carregarJogosByBolaoID();
+        } catch (error: any) {
+            alert("Erro ao atualizar jogo: " + (error.message || ""));
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if(bolaoId){
             carregarJogosByBolaoID();
@@ -151,6 +164,7 @@ export const useJogos = (bolaoId: string | null = null) => {
         loading,
         carregarJogos,
         refresh: carregarJogosByBolaoID,
+        updateJogo,
         
         // Controles de filtro
         filtros: {

@@ -3,14 +3,18 @@ import { useState } from 'react';
 import { AddJogoButton } from '@/pages/AdicionarTime/components/add-jogo-button';
 import { JogosList } from './jogos-list';
 import { ModalNovoJogo } from './modal-novo-jogo';
+import { ModalAtualizarPlacar } from './modal-atualizar-placar';
+
+import type { Jogo } from '@/shared/interfaces/jogo';
 
 import type { StatusFilter } from '@/shared/hooks/useJogos';
 import type { OrdemFilter } from '@/shared/hooks/useJogos';
 
 interface SecaoJogosProps {
-    jogos: any[];
+    jogos: Jogo[];
     loading: boolean;
     onAddJogo: (timeA: string, timeB: string) => void;
+    onUpdateJogo: (jogoId: string, dadosJogo: Partial<Jogo>) => void;
     filtros: {
         status: StatusFilter;
         setStatus: (status: StatusFilter) => void;
@@ -21,10 +25,21 @@ interface SecaoJogosProps {
     };
 }
 
-export const SecaoJogos = ({ jogos, loading, onAddJogo, filtros}: SecaoJogosProps) => {
+export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros}: SecaoJogosProps) => {
     const [openModal, setOpenModal] = useState(false);
+    const [jogoSelecionado, setJogoSelecionado] = useState<Jogo | null>(null);
+    const [openModalPlacar, setOpenModalPlacar] = useState(false);
 
     const inputClasses = "bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 shadow-sm cursor-pointer";
+
+    const handleJogoClick = (jogo: Jogo) => {
+        setJogoSelecionado(jogo);
+        setOpenModalPlacar(true);
+    };
+
+    const handleSavePlacar = (jogoId: string, golA: number, golB: number) => {
+        onUpdateJogo(jogoId, { gol_a_real: golA, gol_b_real: golB, status: 'FINALIZADO' });
+    };
 
     return (
         <section>
@@ -37,6 +52,13 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo, filtros}: SecaoJogosProp
                 isOpen={openModal} 
                 setIsOpen={setOpenModal} 
                 onConfirm={onAddJogo} 
+            />
+
+            <ModalAtualizarPlacar
+                isOpen={openModalPlacar}
+                onClose={() => setOpenModalPlacar(false)}
+                jogo={jogoSelecionado}
+                onSave={handleSavePlacar}
             />
 
             {/* BARRA DE FILTROS */}
@@ -71,8 +93,7 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo, filtros}: SecaoJogosProp
 
             </div>
 
-
-            <JogosList jogos={jogos} loading={loading} />
+            <JogosList jogos={jogos} loading={loading} onJogoClick={handleJogoClick} />
         </section>
     );
 };
