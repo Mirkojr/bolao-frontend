@@ -115,7 +115,7 @@ Fluxo dinâmico para remover participantes do bolão com confirmação visual.
 ![Demonstração da Exclusão de Participante](assets/exclusao-participante-demo.gif)
 
 #### 4. Visão Geral de Times e Jogos
-Central de gerenciamento onde o admin visualiza todos os times cadastrados e a lista de partidas.
+Central de gerenciamento onde o admin visualiza todos os times cadastrados ao adicionar uma partida.
 ![Tela Seção Times e Jogos](assets/tela-secao-times-jogos.png)
 
 ### 5. Tabela de Palpites 
