@@ -1,10 +1,8 @@
 // features/jogos/components/modal-novo-jogo.tsx
 import { useState, useEffect } from 'react';
 import ModalGenerico from '@/shared/components/Modal';
-import { CardTitle } from '@/shared/components/Card';
-import { Button } from '@/shared/components/Button';
 import { useTimes } from '@/shared/hooks/useTimes';
-import { SelecaoTime } from './selecao-time'; 
+import { SelecaoTime } from './selecao-time';
 
 interface ModalNovoJogoProps {
     isOpen: boolean;
@@ -25,7 +23,6 @@ export const ModalNovoJogo = ({ isOpen, setIsOpen, onConfirm }: ModalNovoJogoPro
         if (teamA && teamB) {
             onConfirm(teamA, teamB);
             setIsOpen(false);
-            // Limpa estados
             setTeamA(null);
             setTeamB(null);
         }
@@ -33,32 +30,43 @@ export const ModalNovoJogo = ({ isOpen, setIsOpen, onConfirm }: ModalNovoJogoPro
 
     return (
         <ModalGenerico setModalOpen={setIsOpen} isOpen={isOpen}>
-            <CardTitle className="text-3xl text-center mb-4">NOVO JOGO</CardTitle>
-            
-            <div className="flex flex-col gap-4">
-                <SelecaoTime 
-                    label="Time A (Mandante)" 
-                    selectedTeam={teamA} 
-                    onSelect={setTeamA} 
-                    times={allTeams} 
-                />
-                
-                <div className="text-center font-bold text-gray-400">X</div>
+            <div className="w-full max-w-md px-4 sm:px-6">
+                <h2 className="mb-1 text-center text-2xl font-bold tracking-tight text-gray-900">
+                    Novo jogo
+                </h2>
+                <p className="mb-6 text-center text-sm text-gray-500">
+                    Selecione os dois times do confronto.
+                </p>
 
-                <SelecaoTime 
-                    label="Time B (Visitante)" 
-                    selectedTeam={teamB} 
-                    onSelect={setTeamB} 
-                    times={allTeams} 
-                />
+                <div className="flex flex-col gap-4">
+                    <SelecaoTime
+                        label="Time A (Mandante)"
+                        selectedTeam={teamA}
+                        onSelect={setTeamA}
+                        times={allTeams}
+                    />
 
-                <Button 
-                    className="mt-4 bg-green-600 text-white hover:bg-green-700"
-                    disabled={!teamA || !teamB}
-                    onClick={handleSalvar}
-                >
-                    CRIAR JOGO
-                </Button>
+                    <div className="flex items-center justify-center">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-sm font-bold text-gray-500">
+                            X
+                        </span>
+                    </div>
+
+                    <SelecaoTime
+                        label="Time B (Visitante)"
+                        selectedTeam={teamB}
+                        onSelect={setTeamB}
+                        times={allTeams}
+                    />
+
+                    <button
+                        className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={!teamA || !teamB}
+                        onClick={handleSalvar}
+                    >
+                        Criar jogo
+                    </button>
+                </div>
             </div>
         </ModalGenerico>
     );
