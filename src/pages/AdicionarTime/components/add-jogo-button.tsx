@@ -1,18 +1,15 @@
-import styles from './AddJogoButton.module.css'
-import { type ButtonHTMLAttributes } from 'react'
+import styles from './AddJogoButton.module.css';
+import { type ButtonHTMLAttributes } from 'react';
 
-interface AddJogoButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
-    
-}
+type AddJogoButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const AddJogoButton = ({children, ...props} : AddJogoButtonProps) => {
-
+export const AddJogoButton = ({ children, ...props }: AddJogoButtonProps) => {
     return (
-        <button 
-        className={styles.button33}
-        {...props}
-        >
-            {children || "Criar jogo"} 
+        <button className={styles.button33} {...props}>
+            <span aria-hidden className={styles.icon}>
+                +
+            </span>
+            {children || 'Criar jogo'}
         </button>
-    )
-}
+    );
+};

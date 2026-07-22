@@ -7,82 +7,90 @@ interface JogosListProps {
 }
 
 export const JogosList = ({ jogos, loading, onJogoClick }: JogosListProps) => {
-
-
     const formatarData = (dataString: string | Date) => {
         if (!dataString) return '-';
         const data = new Date(dataString);
-        return data.toLocaleDateString('pt-BR', { 
-            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+        return data.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
         });
     };
 
-    // Essa função descobre como exibir o nome, seja string ou objeto
+    // Descobre como exibir o nome, seja string ou objeto
     const getNomeTime = (time: any) => {
-        if (!time) return "---";
+        if (!time) return '---';
         if (typeof time === 'string') return time;
-        
         return time.nome || time.name || time.label || JSON.stringify(time);
     };
 
-    if (loading) {
-        return <div className="p-4 text-center text-gray-500">Carregando jogos...</div>;
-    }
-
     return (
-        <div className="w-full max-w-2xl mx-auto p-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Todos os Jogos
-            </h2>
+        <div className="w-full">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Todos os jogos
+            </h3>
 
-            {jogos.length === 0 ? (
-                <div className="p-4 bg-gray-100 rounded text-center text-gray-500">
-                    Nenhum jogo cadastrado.
+            {loading ? (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="h-28 animate-pulse rounded-xl border border-gray-100 bg-gray-100"
+                        />
+                    ))}
+                </div>
+            ) : jogos.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-400">
+                    Nenhum jogo cadastrado ainda.
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {jogos.map((jogo) => (
                         <button
                             key={jogo.id}
                             type="button"
                             onClick={() => onJogoClick?.(jogo)}
-                            className="bg-white border rounded-lg shadow-sm p-4 flex flex-col items-center w-full text-left transition hover:border-blue-300 hover:shadow-md cursor-pointer"
+                            className="group flex w-full cursor-pointer flex-col items-center rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                         >
-                            
                             {/* Data */}
-                            <span className="text-xs text-gray-500 mb-2">
+                            <span className="mb-2 text-xs font-medium text-gray-400">
                                 {formatarData(jogo.data_jogo)}
                             </span>
 
-                            {/* Placar / Times */}
-                            <div className="flex items-center justify-between w-full max-w-md gap-2">
-                                {/* Time A */}
-                                <div className="flex-1 text-center font-semibold text-lg truncate">
-                                    {getNomeTime(jogo.timeA || jogo.timeA)}
+                            {/* Times / placar */}
+                            <div className="flex w-full items-center justify-between gap-2">
+                                <div className="flex-1 truncate text-center text-base font-semibold text-gray-800">
+                                    {getNomeTime(jogo.timeA)}
                                 </div>
 
-                                {/* Placar */}
-                                <div className="min-w-20 text-center">
+                                <div className="min-w-16 text-center">
                                     {jogo.status === 'FINALIZADO' ? (
-                                        <span className="font-bold text-xl text-gray-800">
-                                            {jogo.gol_a_real} x {jogo.gol_b_real}
+                                        <span className="text-xl font-extrabold text-gray-900">
+                                            {jogo.gol_a_real} <span className="text-gray-300">x</span>{' '}
+                                            {jogo.gol_b_real}
                                         </span>
                                     ) : (
-                                        <span className="text-gray-400 font-bold text-lg">VS</span>
+                                        <span className="rounded-lg bg-gray-100 px-2 py-1 text-sm font-bold text-gray-400">
+                                            VS
+                                        </span>
                                     )}
                                 </div>
 
-                                {/* Time B */}
-                                <div className="flex-1 text-center font-semibold text-lg truncate">
-                                    {getNomeTime(jogo.timeB || jogo.timeB)}
+                                <div className="flex-1 truncate text-center text-base font-semibold text-gray-800">
+                                    {getNomeTime(jogo.timeB)}
                                 </div>
                             </div>
 
                             {/* Status */}
-                            <div className="mt-2">
-                                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
-                                    jogo.status === 'FINALIZADO' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
+                            <div className="mt-3">
+                                <span
+                                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                                        jogo.status === 'FINALIZADO'
+                                            ? 'bg-emerald-100 text-emerald-700'
+                                            : 'bg-amber-100 text-amber-700'
+                                    }`}
+                                >
                                     {jogo.status || 'AGENDADO'}
                                 </span>
                             </div>
@@ -92,4 +100,4 @@ export const JogosList = ({ jogos, loading, onJogoClick }: JogosListProps) => {
             )}
         </div>
     );
-}
+};

@@ -6,6 +6,7 @@ interface ModalProps extends HTMLAttributes<HTMLDivElement>{
     setModalOpen: (value: boolean) => void,
 }
 
+// Estilos para o modal e o fundo escuro
 const BACKGROUND_STYLE: React.CSSProperties = {
     position: 'fixed',
     top: 0,
@@ -44,6 +45,7 @@ const CLOSE_BUTTON_STYLE : React.CSSProperties = {
     cursor: 'pointer'
 }
 
+// Componente ModalGenerico 
 export default function ModalGenerico({ isOpen, children, setModalOpen, ...props}: ModalProps) {
 
     if (isOpen) {

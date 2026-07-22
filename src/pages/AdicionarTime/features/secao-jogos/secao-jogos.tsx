@@ -6,9 +6,7 @@ import { ModalNovoJogo } from './modal-novo-jogo';
 import { ModalAtualizarPlacar } from './modal-atualizar-placar';
 
 import type { Jogo } from '@/shared/interfaces/jogo';
-
-import type { StatusFilter } from '@/shared/hooks/useJogos';
-import type { OrdemFilter } from '@/shared/hooks/useJogos';
+import type { StatusFilter, OrdemFilter } from '@/shared/hooks/useJogos';
 
 interface SecaoJogosProps {
     jogos: Jogo[];
@@ -20,17 +18,18 @@ interface SecaoJogosProps {
         setStatus: (status: StatusFilter) => void;
         data: string;
         setData: (data: string) => void;
-        ordem: OrdemFilter,
+        ordem: OrdemFilter;
         setOrdem: (ordem: OrdemFilter) => void;
     };
 }
 
-export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros}: SecaoJogosProps) => {
+export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros }: SecaoJogosProps) => {
     const [openModal, setOpenModal] = useState(false);
     const [jogoSelecionado, setJogoSelecionado] = useState<Jogo | null>(null);
     const [openModalPlacar, setOpenModalPlacar] = useState(false);
 
-    const inputClasses = "bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 shadow-sm cursor-pointer";
+    const selectClasses =
+        'w-full cursor-pointer rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30';
 
     const handleJogoClick = (jogo: Jogo) => {
         setJogoSelecionado(jogo);
@@ -42,18 +41,22 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros}: 
     };
 
     return (
-        <section>
-            <div className="flex justify-center mb-6">
-                <AddJogoButton onClick={() => setOpenModal(true)} />
+        <section className="w-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+            {/* Cabeçalho + ação */}
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900">Jogos</h2>
+                    <p className="text-xs text-gray-500">
+                        Crie confrontos e clique em um jogo para atualizar o placar.
+                    </p>
+                </div>
+                <div className="shrink-0">
+                    <AddJogoButton onClick={() => setOpenModal(true)} />
+                </div>
             </div>
 
-            {/* Modal */}
-            <ModalNovoJogo 
-                isOpen={openModal} 
-                setIsOpen={setOpenModal} 
-                onConfirm={onAddJogo} 
-            />
-
+            {/* Modais */}
+            <ModalNovoJogo isOpen={openModal} setIsOpen={setOpenModal} onConfirm={onAddJogo} />
             <ModalAtualizarPlacar
                 isOpen={openModalPlacar}
                 onClose={() => setOpenModalPlacar(false)}
@@ -61,16 +64,14 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros}: 
                 onSave={handleSavePlacar}
             />
 
-            {/* BARRA DE FILTROS */}
-            <div className="flex flex-wrap gap-4 mb-6 justify-center bg-gray-50 p-4 rounded-xl border border-gray-100">
-                
-                {/* Filtro de Status */}
+            {/* Barra de filtros */}
+            <div className="mb-6 grid grid-cols-1 gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:grid-cols-2">
                 <div className="flex flex-col">
-                    <label className="text-xs text-gray-500 mb-1 ml-1 font-medium">Status</label>
-                    <select 
-                        value={filtros.status} 
+                    <label className="mb-1 ml-0.5 text-xs font-medium text-gray-500">Status</label>
+                    <select
+                        value={filtros.status}
                         onChange={(e) => filtros.setStatus(e.target.value as StatusFilter)}
-                        className={inputClasses}
+                        className={selectClasses}
                     >
                         <option value="todos">Todos</option>
                         <option value="agendado">Agendados</option>
@@ -78,19 +79,17 @@ export const SecaoJogos = ({ jogos, loading, onAddJogo, onUpdateJogo, filtros}: 
                     </select>
                 </div>
 
-                {/* Ordenação (Mais Recentes) */}
                 <div className="flex flex-col">
-                    <label className="text-xs text-gray-500 mb-1 ml-1 font-medium">Ordem</label>
-                    <select 
+                    <label className="mb-1 ml-0.5 text-xs font-medium text-gray-500">Ordem</label>
+                    <select
                         value={filtros.ordem}
                         onChange={(e) => filtros.setOrdem(e.target.value as OrdemFilter)}
-                        className={`${inputClasses} min-w-35`}
+                        className={selectClasses}
                     >
-                        <option value="decrescente">⬇️ Mais Recentes</option>
-                        <option value="crescente">⬆️ Mais Antigos</option>
+                        <option value="decrescente">⬇️ Mais recentes</option>
+                        <option value="crescente">⬆️ Mais antigos</option>
                     </select>
                 </div>
-
             </div>
 
             <JogosList jogos={jogos} loading={loading} onJogoClick={handleJogoClick} />
