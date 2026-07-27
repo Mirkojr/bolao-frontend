@@ -1,4 +1,3 @@
-import React from "react";
 import { useJogos } from "@/shared/hooks/useJogos";
 
 export const AtualizarPlacar = () => {

@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { NavBar } from '@/shared/components/NavBar';
-import { Footer } from '@/shared/components/Footer';
+import { Footer } from '@/shared/components/footer';
 
 // Componente de layout principal que envolve as páginas com NavBar e Footer
 export function MainLayout() {
