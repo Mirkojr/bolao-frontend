@@ -9,6 +9,7 @@ import { usePalpites } from "./hooks/usePalpites";
 // Componentes 
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { Section } from "./components/Section";
+import { ExportButtons } from "@/shared/components/ExportButtons";
 
 // Features 
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
@@ -117,7 +118,17 @@ export const EditarBolaoPage = () => {
                 onAdd={addParticipante}
                 onRemove={(id) => removeParticipante(bolaoId!, id)}
             />
-
+            
+            {/* SECAO DE EXPORTACAO */}
+            <Section title="Exportar Bolão" className="mb-6">
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <p className="text-gray-600 mb-4">
+                        Exporte os dados do bolão em formato Excel ou PDF.
+                    </p>
+                    <ExportButtons bolaoId={bolaoId} />
+                </div>
+            </Section>
+            
             {/* SPINNER DE LOADING */}
             {(loadingPart || loadingJogos || loadingPalpites) && (
                 <LoadingSpinner 
