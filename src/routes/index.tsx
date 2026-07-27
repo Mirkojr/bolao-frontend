@@ -5,7 +5,7 @@ import Home from '@/pages/Home';
 import AdminBolaoPage from '@/pages/admin/ListarBoloes/ListarBoloes';
 import { Login } from '@/pages/Login/login-page';
 import EditarBolaoPage from '@/pages/admin/EditarBoloes/EditarBoloes';
-import NotFoundPage from '@/pages/Not-found/not-found-page';
+import NotFoundPage from '@/pages/not-found/not-found-page';
 import { AdicionarTimePage } from '@/pages/AdicionarTime/AdicionarTime';
 
 import { MainLayout } from '@/layout/MainLayout/MainLayout';

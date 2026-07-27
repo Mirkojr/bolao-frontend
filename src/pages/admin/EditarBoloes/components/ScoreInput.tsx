@@ -3,6 +3,8 @@ import { forwardRef, useRef } from "react";
 interface ScoreInputProps {
     scoreA: string | number;
     scoreB: string | number;
+    showActions?: boolean;
+    saving?: boolean
     onScoreAChange: (value: string) => void;
     onScoreBChange: (value: string) => void;
     onSave?: () => void;
