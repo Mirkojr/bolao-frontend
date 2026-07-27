@@ -1,9 +1,9 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 
-import Home from '@/pages/Home';
+import Home from '@/pages/home';
 import AdminBolaoPage from '@/pages/admin/ListarBoloes/ListarBoloes';
-import { Login } from '@/pages/Login/login-page';
+import { Login } from '@/pages/login/login-page';
 import EditarBolaoPage from '@/pages/admin/EditarBoloes/EditarBoloes';
 import NotFoundPage from '@/pages/not-found/not-found-page';
 import { AdicionarTimePage } from '@/pages/AdicionarTime/AdicionarTime';
