@@ -12,5 +12,9 @@ export const boloesService = {
 
     getById: (id: number): Promise<Bolao> => {
         return httpClient.get<Bolao>(`/boloes/${id}`);
+    },
+
+    delete: (id: number): Promise<void> => {
+        return httpClient.delete<void>(`/boloes/${id}`);
     }
 };

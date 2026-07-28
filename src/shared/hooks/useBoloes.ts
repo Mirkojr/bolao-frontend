@@ -50,6 +50,15 @@ export const useBoloes = () => {
         }
     };
 
+    const deletarBolao = async (id: number) => {
+        try {
+            await boloesService.delete(id);
+            await carregarBoloes(true);
+        } catch(error) {
+            console.error("Erro ao deletar bolão:", error);
+        }
+    };
+
     useEffect(() => {
         carregarBoloes();
     }, []);
@@ -60,6 +69,7 @@ export const useBoloes = () => {
         criarBolao, 
         creating,
         getBolaoById,
+        deletarBolao,
         refetch: carregarBoloes 
     };
 };

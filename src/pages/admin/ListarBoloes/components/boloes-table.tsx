@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import type { BoloesTableProps } from "@/shared/interfaces/bolao-table-props";
+import { DeleteBolaoButton } from "./deletar-bolao-button";
 
-export const BoloesTable = ({ boloes }: BoloesTableProps) => {
+interface BoloesTablePropsUpdated extends BoloesTableProps {
+    onBolaoDeleted: (id: number) => void;
+}
+
+export const BoloesTable = ({ boloes, onBolaoDeleted }: BoloesTablePropsUpdated) => {
   return (
     <div className="overflow-x-auto shadow-md sm:rounded-lg mt-4">
       <table className="w-full text-sm text-left text-gray-500">
@@ -9,25 +14,25 @@ export const BoloesTable = ({ boloes }: BoloesTableProps) => {
           <tr>
             <th className="px-6 py-3">Nome do Bolão</th>
             <th className="px-6 py-3">Criado em</th>
+            <th className="px-6 py-3 text-right">Ações</th>
           </tr>
         </thead>
         <tbody>
           {boloes.map((bolao) => (
-            <tr 
-              key={bolao.id} 
-              className="bg-white border-b hover:bg-gray-50"
-            >
+            <tr key={bolao.id} className="bg-white border-b hover:bg-gray-50">
               <td className="px-6 py-4 font-medium text-gray-900">
-                <Link 
-                  to={`/admin/edit/${bolao.id}`} 
-                  state={{ bolaoData: bolao }} 
-                  className="hover:text-green-600 hover:underline transition-colors"
-                >
+                <Link to={`/admin/edit/${bolao.id}`} state={{ bolaoData: bolao }} className="hover:text-green-600 hover:underline transition-colors">
                   {bolao.nome}
                 </Link>
               </td>
               <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
                 {new Date(bolao.created_at).toLocaleDateString('pt-BR')}
+              </td>
+              <td className="px-6 py-4 flex justify-end">
+                <DeleteBolaoButton 
+                    bolaoId={bolao.id} 
+                    onDeleted={onBolaoDeleted} 
+                />
               </td>
             </tr>
           ))}
