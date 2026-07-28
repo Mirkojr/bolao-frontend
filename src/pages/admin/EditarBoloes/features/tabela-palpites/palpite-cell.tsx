@@ -17,6 +17,14 @@ export const PalpiteCell = ({ jogo, palpite, onSave }: PalpiteCellProps) => {
     
     const firstInputRef = useRef<HTMLInputElement>(null);
 
+    const PONTUACAO_EXATA = 11;
+    const PONTUACAO_PARCIAL = 5;
+
+    const COR_PALPITE_AGENDADO = "bg-gray-100 text-gray-600 border-gray-200";
+    const COR_PALPITE_EXATO = "bg-green-100 text-green-800 border-green-300";
+    const COR_PALPITE_PARCIAL = "bg-amber-100 text-amber-800 border-amber-300";
+    const COR_PALPITE_ERRADO = "bg-red-100 text-red-800 border-red-200";
+
     const [scoreA, setScoreA] = useState<string | number>(palpite?.gol_a_palpite ?? 0);
     const [scoreB, setScoreB] = useState<string | number>(palpite?.gol_b_palpite ?? 0);
 
@@ -26,10 +34,10 @@ export const PalpiteCell = ({ jogo, palpite, onSave }: PalpiteCellProps) => {
     }, [palpite]);
 
     const getCorPorPontos = ( pontos : number = 0) => {
-        if (jogo.status == 'AGENDADO') return "bg-gray-100 text-gray-600 border-gray-200"; // Jogo não ocorreu ainda
-        if (pontos >= 25) return "bg-green-100 text-green-800 border-green-300"; // Cravada
-        if (pontos >= 10) return "bg-blue-100 text-blue-800 border-blue-300";   // Acertou Vencedor
-        return "bg-red-50 text-gray-700 border-transparent"; // Zero / Errou
+        if (jogo.status == 'AGENDADO') return COR_PALPITE_AGENDADO; // Jogo não ocorreu ainda
+        if (pontos >= PONTUACAO_EXATA) return COR_PALPITE_EXATO; // Cravada
+        if (pontos >= PONTUACAO_PARCIAL) return COR_PALPITE_PARCIAL; // Acertou vencedor/empate
+        return COR_PALPITE_ERRADO; // Errou
     };
 
     const handleSave = async () => {
