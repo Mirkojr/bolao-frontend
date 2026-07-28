@@ -1,7 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '';
 export const AUTH_LOGOUT_EVENT = 'auth:logout';
 
-// Classe de erro personalizada para erros de API
 export class ApiError extends Error {
     status: number;
     message: string;
@@ -16,17 +15,14 @@ export class ApiError extends Error {
     }
 }
 
-// Função para construir os headers, incluindo o token de autenticação se disponível
 const getHeaders = (customHeaders?: HeadersInit, body?: unknown) => {
     const headers = new Headers(customHeaders);
     const token = localStorage.getItem('meu_token');
 
-    // Se houver um token e o header Authorization ainda não estiver presente, adiciona o token
     if (token && !headers.has('Authorization')) {
         headers.set('Authorization', `Bearer ${token}`);
     }
 
-    // Se o body não for FormData e o header Content-Type ainda não estiver presente, define como application/json
     if (!(body instanceof FormData) && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json');
     }
@@ -34,8 +30,7 @@ const getHeaders = (customHeaders?: HeadersInit, body?: unknown) => {
     return headers;
 };
 
-// Toda resposta do backend passa por aqui
-async function handleResponse(response: Response) {
+async function handleResponse(response: Response, responseType: 'json' | 'blob' = 'json') {
     if (response.status === 401) {
         window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
         throw new ApiError(401, 'Sessão expirada');
@@ -46,13 +41,21 @@ async function handleResponse(response: Response) {
         throw new ApiError(response.status, errorData?.message || 'Erro na requisição', errorData);
     }
 
-    return response.status === 204 ? null : response.json();
+    if (response.status === 204) return null;
+
+    // Se for blob, retorna o blob. Se não, mantém o comportamento padrão de json.
+    if (responseType === 'blob') {
+        return response.blob();
+    }
+
+    return response.json();
 }
 
-interface FetchOptions extends Omit<RequestInit, 'method' | 'body'> {}
+// Estendemos as opções para incluir o responseType opcional
+interface FetchOptions extends Omit<RequestInit, 'method' | 'body'> {
+    responseType?: 'json' | 'blob';
+}
 
-
-// Função genérica para fazer requisições HTTP
 async function request<T>(endpoint: string, method: string, body?: unknown, options?: FetchOptions): Promise<T> {
     const isFormData = body instanceof FormData;
     
@@ -63,7 +66,7 @@ async function request<T>(endpoint: string, method: string, body?: unknown, opti
         body: isFormData ? (body as FormData) : (body ? JSON.stringify(body) : undefined),
     });
 
-    return handleResponse(response);
+    return handleResponse(response, options?.responseType);
 }
 
 export const httpClient = {
