@@ -49,6 +49,18 @@ export const jogosService = {
         return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
     },
 
+    /**
+     * Define (ou limpa) o resultado final de um jogo.
+     * Passe null nos dois gols para "desfinalizar" o jogo.
+     */
+    setResultado: async (
+        jogoId: string,
+        gol_a_real: number | null,
+        gol_b_real: number | null
+    ): Promise<Jogo> => {
+        return httpClient.put<Jogo>(`/jogos/${jogoId}`, { gol_a_real, gol_b_real });
+    },
+    
     // Remove o jogo do bolão (associação)
     delete: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);

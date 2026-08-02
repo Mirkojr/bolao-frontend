@@ -1,78 +1,71 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Time } from "@/shared/interfaces/time";
+import { TimePickerSheet } from "@/shared/components/TimePickerSheet";
 
-interface TimeSelectProps {
-    label?: string;
+type Props = {
     times: Time[];
-    value: string;                 // id do time selecionado ("" = nenhum)
-    onChange: (id: string) => void;
+    value: string | null;
+    onChange: (timeId: string) => void;
+    label?: string;
     placeholder?: string;
-    excludeId?: string;            // esconde este id (ex: time já escolhido no outro campo)
-}
+    excludeIds?: string[];
+    disabled?: boolean;
+};
 
 export const TimeSelect = ({
-    label, times, value, onChange, placeholder = "Selecionar time...", excludeId,
-}: TimeSelectProps) => {
-    const [open, setOpen] = useState(false);
-    const [busca, setBusca] = useState("");
-    const ref = useRef<HTMLDivElement>(null);
+    times, value, onChange, label, placeholder = "Selecionar", excludeIds = [], disabled,
+}: Props) => {
+    const [pickerAberto, setPickerAberto] = useState(false);
 
-    const selecionado = times.find((t) => String(t.id) === String(value));
-    const filtrados = times
-        .filter((t) => String(t.id) !== String(excludeId))
-        .filter((t) => t.nome.toLowerCase().includes(busca.toLowerCase()));
-
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
-                setOpen(false);
-                setBusca("");
-            }
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
+    const selecionado = useMemo(
+        () => times.find((t) => String(t.id) === String(value)) ?? null,
+        [times, value]
+    );
 
     return (
-        <div className="w-full" ref={ref}>
-            {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
-            <div className="relative">
-                <button type="button" onClick={() => setOpen((v) => !v)}
-                    className="flex w-full items-center justify-between rounded border border-gray-300 bg-white px-3 py-2 text-left text-sm outline-none transition focus:border-blue-500">
-                    <span className={selecionado ? "text-gray-800" : "text-gray-400"}>
-                        {selecionado ? `${selecionado.nome} (${selecionado.sigla})` : placeholder}
-                    </span>
-                    <span className="text-gray-400">▾</span>
-                </button>
+        <div className="w-full min-w-0">
+            {label && (
+                <span className="mb-1.5 block text-center text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    {label}
+                </span>
+            )}
 
-                {open && (
-                    <div className="absolute z-20 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
-                        <div className="p-2">
-                            <input autoFocus value={busca} onChange={(e) => setBusca(e.target.value)}
-                                placeholder="Buscar..."
-                                className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-500" />
-                        </div>
-                        <ul className="max-h-52 overflow-y-auto pb-2">
-                            {filtrados.length === 0 ? (
-                                <li className="px-3 py-2 text-sm text-gray-400">Nenhum time encontrado</li>
-                            ) : (
-                                filtrados.map((t) => (
-                                    <li key={t.id}>
-                                        <button type="button"
-                                            onClick={() => { onChange(String(t.id)); setOpen(false); setBusca(""); }}
-                                            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50">
-                                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
-                                                {t.sigla}
-                                            </span>
-                                            <span className="truncate text-gray-800">{t.nome}</span>
-                                        </button>
-                                    </li>
-                                ))
-                            )}
-                        </ul>
-                    </div>
+            <button
+                type="button"
+                disabled={disabled}
+                onClick={() => setPickerAberto(true)}
+                className={`flex min-h-72px w-full min-w-0 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-white px-2 py-3 transition
+                    ${selecionado ? "border-indigo-200" : "border-dashed border-gray-300"}
+                    ${disabled ? "cursor-not-allowed opacity-60" : "active:scale-[0.98] hover:border-indigo-400"}`}
+            >
+                {selecionado ? (
+                    <>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+                            {(selecionado.sigla ?? selecionado.nome.substring(0, 3)).toUpperCase()}
+                        </span>
+                        <span className="line-clamp-2 w-full break-words text-center text-sm font-semibold leading-tight text-gray-800">
+                            {selecionado.nome}
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-base text-gray-400">
+                            +
+                        </span>
+                        <span className="text-xs font-medium text-gray-400">{placeholder}</span>
+                    </>
                 )}
-            </div>
+            </button>
+
+            <TimePickerSheet
+                isOpen={pickerAberto}
+                onClose={() => setPickerAberto(false)}
+                times={times}
+                valueId={value}
+                onSelect={onChange}
+                title={label ? `Escolher ${label.toLowerCase()}` : "Escolher time"}
+                excludeIds={excludeIds}
+            />
         </div>
     );
 };

@@ -6,32 +6,62 @@ import { useTimes } from "@/shared/hooks/useTimes";
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input";
 import { Pagination } from "@/shared/components/Pagination";
-import { JogoFormModal } from "./components/JogoFormModal";
+import { rotuloDataHora } from "@/shared/utils/data-jogo";
+import { JogoFormModal, type JogoFormData } from "./components/JogoFormModal";
+import { ResultadoModal } from "./components/ResultadoModal";
 
 export const JogosPage = () => {
     const { isAuthenticated } = useAuth();
+
     const {
-        jogos, loading, page, setPage, totalPages, total,
-        search, setSearch, criarJogo, atualizarJogo, deletarJogo,
+        jogos,
+        loading,
+        page,
+        setPage,
+        totalPages,
+        total,
+        search,
+        setSearch,
+        criarJogo,
+        atualizarJogo,
+        deletarJogo,
+        salvarResultado,
     } = useJogosPaginado();
 
     const { allTeams, carregarTimes } = useTimes();
 
-    const [modalOpen, setModalOpen] = useState(false);
+    const [formOpen, setFormOpen] = useState(false);
     const [jogoEditando, setJogoEditando] = useState<Jogo | null>(null);
+    const [jogoResultado, setJogoResultado] = useState<Jogo | null>(null);
 
-    useEffect(() => { carregarTimes(); }, [carregarTimes]);
+    useEffect(() => {
+        carregarTimes();
+    }, [carregarTimes]);
 
     if (!isAuthenticated) {
-        return <div className="p-6 text-red-500">Acesso negado. Faça login como administrador.</div>;
+        return (
+            <div className="p-6 text-red-500">
+                Acesso negado. Faça login como administrador.
+            </div>
+        );
     }
 
-    const abrirCriar = () => { setJogoEditando(null); setModalOpen(true); };
-    const abrirEditar = (j: Jogo) => { setJogoEditando(j); setModalOpen(true); };
+    const abrirCriar = () => {
+        setJogoEditando(null);
+        setFormOpen(true);
+    };
 
-    const handleSubmit = async (dados: { time_a_id: number; time_b_id: number; data_jogo: string }) => {
-        if (jogoEditando) await atualizarJogo(String(jogoEditando.id), dados);
-        else await criarJogo(dados);
+    const abrirEditar = (j: Jogo) => {
+        setJogoEditando(j);
+        setFormOpen(true);
+    };
+
+    const handleSubmit = async (dados: JogoFormData) => {
+        if (jogoEditando) {
+            await atualizarJogo(String(jogoEditando.id), dados);
+        } else {
+            await criarJogo(dados);
+        }
     };
 
     const handleDelete = async (j: Jogo) => {
@@ -41,57 +71,126 @@ export const JogosPage = () => {
         }
     };
 
-    const fmtData = (iso?: string) =>
-        iso ? new Date(iso).toLocaleString("pt-BR", {
-            day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
-        }) : "Data a definir";
-
     return (
-        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6">
+        <div className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6 sm:px-6 sm:pb-10">
             {/* Cabeçalho */}
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Jogos</h1>
                     <p className="text-sm text-gray-500">{total} jogo(s) cadastrado(s)</p>
                 </div>
-                <Button variant="success" onClick={abrirCriar} className="w-full sm:w-auto">+ Novo jogo</Button>
+                {/* No mobile usamos o botão flutuante */}
+                <Button variant="success" onClick={abrirCriar} className="hidden sm:inline-flex">
+                    + Novo jogo
+                </Button>
             </div>
 
             {/* Busca */}
             <div className="mb-4">
-                <Input fullWidth placeholder="Buscar por time..." value={search}
-                    onChange={(e) => setSearch(e.target.value)} />
+                <Input
+                    fullWidth
+                    placeholder="Buscar por time..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
             </div>
+
+            <p className="mb-2 text-xs text-gray-400">
+                Toque em um jogo para lançar ou editar o resultado.
+            </p>
 
             {/* Lista */}
             {loading ? (
                 <p className="py-10 text-center text-gray-500">Carregando jogos...</p>
             ) : jogos.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-gray-300 py-12 text-center">
-                    <p className="text-gray-500">Nenhum jogo encontrado.</p>
+                    <p className="mb-3 text-gray-500">Nenhum jogo encontrado.</p>
+                    <Button variant="success" size="sm" onClick={abrirCriar}>
+                        + Criar o primeiro jogo
+                    </Button>
                 </div>
             ) : (
                 <ul className="space-y-2">
                     {jogos.map((j) => {
-                        const finalizado = j.gol_a_real !== null && j.gol_a_real !== undefined;
+                        const finalizado =
+                            j.gol_a_real !== null && j.gol_a_real !== undefined;
+
                         return (
-                            <li key={j.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <p className="truncate font-medium text-gray-800">
-                                            {j.timeA?.nome ?? "Time A"} <span className="text-gray-400">vs</span> {j.timeB?.nome ?? "Time B"}
-                                        </p>
-                                        <p className="text-xs text-gray-500">{fmtData(j.data_jogo)}</p>
+                            <li key={j.id}>
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => setJogoResultado(j)}
+                                    onKeyDown={(e) => e.key === "Enter" && setJogoResultado(j)}
+                                    className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-indigo-300 hover:shadow active:scale-[0.99]"
+                                >
+                                    {/* Confronto lado a lado */}
+                                    <div className="flex items-center gap-2">
+                                        <span className="min-w-0 flex-1 truncate text-right text-sm font-semibold text-gray-800">
+                                            {j.timeA?.nome ?? "Time A"}
+                                        </span>
+
+                                        <span
+                                            className={`shrink-0 rounded-lg px-3 py-1 text-base font-bold tabular-nums ${
+                                                finalizado
+                                                    ? "bg-indigo-900 text-white"
+                                                    : "bg-gray-100 text-gray-400"
+                                            }`}
+                                        >
+                                            {finalizado ? `${j.gol_a_real} - ${j.gol_b_real}` : "X"}
+                                        </span>
+
+                                        <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-gray-800">
+                                            {j.timeB?.nome ?? "Time B"}
+                                        </span>
                                     </div>
-                                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                                        finalizado ? "bg-gray-100 text-gray-600" : "bg-green-100 text-green-700"
-                                    }`}>
-                                        {finalizado ? `${j.gol_a_real} - ${j.gol_b_real}` : "Agendado"}
-                                    </span>
-                                </div>
-                                <div className="mt-3 flex justify-end gap-2">
-                                    <Button size="sm" variant="secondary" onClick={() => abrirEditar(j)}>Editar</Button>
-                                    <Button size="sm" variant="danger" onClick={() => handleDelete(j)}>Excluir</Button>
+
+                                    {/* Meta + ações */}
+                                    <div className="mt-3 flex items-center justify-between gap-2 border-t border-gray-100 pt-3">
+                                        <div className="flex min-w-0 items-center gap-2">
+                                            <span
+                                                className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                                                    finalizado
+                                                        ? "bg-gray-100 text-gray-600"
+                                                        : "bg-green-100 text-green-700"
+                                                }`}
+                                            >
+                                                {finalizado ? "Finalizado" : "Agendado"}
+                                            </span>
+                                            <span className="truncate text-xs text-gray-500">
+                                                {rotuloDataHora(j.data_jogo)}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex shrink-0 gap-1">
+                                            <button
+                                                aria-label="Editar jogo"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    abrirEditar(j);
+                                                }}
+                                                className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-indigo-600"
+                                            >
+                                                ✎
+                                            </button>
+                                            <button
+                                                aria-label="Excluir jogo"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(j);
+                                                }}
+                                                className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+                                            >
+                                                🗑
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {!finalizado && (
+                                        <p className="mt-2 text-center text-[11px] font-medium text-indigo-600">
+                                            + Lançar resultado
+                                        </p>
+                                    )}
                                 </div>
                             </li>
                         );
@@ -101,12 +200,29 @@ export const JogosPage = () => {
 
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
+            {/* FAB mobile */}
+            <button
+                onClick={abrirCriar}
+                aria-label="Novo jogo"
+                className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-3xl font-light text-white shadow-lg active:scale-95 sm:hidden"
+            >
+                +
+            </button>
+
+            {/* Modais */}
             <JogoFormModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
+                isOpen={formOpen}
+                onClose={() => setFormOpen(false)}
                 times={allTeams}
                 jogoEditando={jogoEditando}
                 onSubmit={handleSubmit}
+            />
+
+            <ResultadoModal
+                isOpen={!!jogoResultado}
+                onClose={() => setJogoResultado(null)}
+                jogo={jogoResultado}
+                onSalvar={salvarResultado}
             />
         </div>
     );

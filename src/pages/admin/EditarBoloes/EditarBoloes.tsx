@@ -14,12 +14,14 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { Section } from "./components/Section";
 import { Button } from "@/shared/components/Button";
 import { ExportButtons } from "@/shared/components/ExportButtons";
+import type { JogoFormData } from "@/pages/admin/Jogos/components/JogoFormModal";
 
 // Features
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secaoParticipante";
 import { AdicionarJogosModal } from "./features/adicionar-jogos/AdicionarJogosModal";
 import { JogoFormModal } from "@/pages/admin/Jogos/components/JogoFormModal";
+
 
 // Contexto
 import { BolaoProvider } from "./context/bolao-context";
@@ -56,9 +58,9 @@ export const EditarBolaoPage = () => {
         );
     }
 
-    const handleCriarJogo = async (dados: { time_a_id: number; time_b_id: number; data_jogo: string }) => {
+    const handleCriarJogo = async (dados: JogoFormData) => {
         await jogosService.create(dados);
-        setReloadToken((t) => t + 1); // faz o modal de seleção recarregar já com o novo jogo
+        setReloadToken((t) => t + 1);
     };
 
     return (

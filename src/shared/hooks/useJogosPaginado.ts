@@ -48,11 +48,26 @@ export const useJogosPaginado = () => {
         await carregar(true);
     };
 
+    const salvarResultado = async (
+        jogoId: string,
+        golA: number | null,
+        golB: number | null
+    ) => {
+        setLoading(true);
+        try {
+            await jogosService.setResultado(jogoId, golA, golB);
+            await carregar(); // recarrega a página atual
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         jogos, loading,
         page, setPage, totalPages, total,
         search, setSearch,
         criarJogo, atualizarJogo, deletarJogo,
         refetch: carregar,
+        salvarResultado,
     };
 };
