@@ -88,14 +88,15 @@ export const useJogos = (bolaoId: string | null = null) => {
         }
     }, []);
 
-    // ADICIONAR UM JOGO QUALQUER
-    const addJogo = async (timeA: string, timeB: string) => {
+    // ADICIONAR UM JOGO QUALQUER (agora com data/hora)
+    const addJogo = async (timeA: string, timeB: string, dataJogo?: string) => {
         try {
             setLoading(true);
-            await jogosService.add(timeA, timeB);
+            await jogosService.add(timeA, timeB, dataJogo);
             await carregarJogos();
         } catch (error: any) {
             alert("Erro ao adicionar jogo: " + (error.message || ""));
+            throw error; // repassa p/ o modal conseguir tratar/exibir o erro
         } finally {
             setLoading(false);
         }

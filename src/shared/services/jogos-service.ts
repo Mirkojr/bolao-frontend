@@ -1,33 +1,97 @@
 import { httpClient } from '@/shared/api/httpClient';
 import type { Jogo } from '@/shared/interfaces/jogo';
- 
+import type { Paginated } from '@/shared/interfaces/pagination';
+import type { JogoFiltros, JogoCounts } from "@/shared/interfaces/jogo-filtros.ts";
+
+export type JogosListagem = Paginated<Jogo> & { counts?: JogoCounts };
+
+interface GetJogosParams {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+}
+
 export const jogosService = {
 
     getAll: (): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/jogos`);
     },
 
+    getPaginated: (params: GetJogosParams = {}): Promise<Paginated<Jogo>> => {
+        const query = new URLSearchParams();
+        query.set('page', String(params.page ?? 1));
+        query.set('limit', String(params.limit ?? 10));
+        if (params.search) query.set('search', params.search);
+        if (params.status) query.set('status', params.status);
+        return httpClient.get<Paginated<Jogo>>(`/jogos?${query.toString()}`);
+    },
+
     getByBolaoId: (bolaoId: string): Promise<Jogo[]> => {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },
 
-    add: (timeA: string, timeB: string): Promise<Jogo> => {
-        // O backend deve buscar o ID dos times pelo nome ou criar se não existir
-        return httpClient.post<Jogo>(`/jogos`, { 
-            timeA: timeA, 
-            timeB: timeB 
+    // Cria jogo selecionando times já cadastrados (por id)
+    create: (data: { time_a_id: number; time_b_id: number; data_jogo: string }): Promise<Jogo> => {
+        return httpClient.post<Jogo>(`/jogos`, data);
+    },
+
+    // Mantido p/ compatibilidade (cria/busca time por nome)
+    add: (timeA: string, timeB: string, dataJogo?: string): Promise<Jogo> => {
+        return httpClient.post<Jogo>(`/jogos`, {
+            timeA, timeB,
+            ...(dataJogo ? { data_jogo: dataJogo } : {}),
         });
     },
-    
+
     addJogoToBolao: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.post<void>(`/boloes/${bolaoId}/jogos/${jogoId}`, {});
     },
 
+    update: (jogoId: string, dadosJogo: Partial<Jogo>): Promise<Jogo> => {
+        return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
+    },
+
+    /**
+     * Define (ou limpa) o resultado final de um jogo.
+     * Passe null nos dois gols para "desfinalizar" o jogo.
+     */
+    setResultado: async (
+        jogoId: string,
+        gol_a_real: number | null,
+        gol_b_real: number | null
+    ): Promise<Jogo> => {
+        return httpClient.put<Jogo>(`/jogos/${jogoId}`, { gol_a_real, gol_b_real });
+    },
+    
+    // Remove o jogo do bolão (associação)
     delete: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
     },
 
-    update: (jogoId: string, dadosJogo: Partial<Jogo>): Promise<Jogo> => {
-        return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
+    // Exclui o jogo globalmente
+    deleteGlobal: (jogoId: string): Promise<void> => {
+        return httpClient.delete<void>(`/jogos/${jogoId}`);
+    },
+
+    /**
+     * Listagem paginada com filtros. Só envia os params que estão ativos,
+     * mantendo a URL limpa e o backend no comportamento padrão.
+     */
+    listar: async (
+        page: number,
+        limit: number,
+        filtros: Partial<JogoFiltros> = {}
+    ): Promise<JogosListagem> => {
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("limit", String(limit));
+
+        if (filtros.search?.trim()) params.set("search", filtros.search.trim());
+        if (filtros.status && filtros.status !== "todos") params.set("status", filtros.status);
+        if (filtros.periodo && filtros.periodo !== "todos") params.set("periodo", filtros.periodo);
+        if (filtros.sort && filtros.sort !== "proximos") params.set("sort", filtros.sort);
+
+        return httpClient.get<JogosListagem>(`/jogos?${params.toString()}`);
     },
 };
