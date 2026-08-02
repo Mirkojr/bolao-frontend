@@ -1,37 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Bolao } from "@/shared/interfaces/bolao";
 import { boloesService } from "@/shared/services/bolao-service";
 
-// Hook para gerenciar a lista de bolões, criação, deleção e atualização
+const LIMIT = 10;
+
 export const useBoloes = () => {
     const [boloes, setBoloes] = useState<Bolao[]>([]);
     const [loading, setLoading] = useState(true);
     const [creating, setCreating] = useState(false);
 
-    const carregarBoloes = async (isSilent = false) => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [total, setTotal] = useState(0);
+
+    const carregarBoloes = useCallback(async (isSilent = false) => {
         if (!isSilent) setLoading(true);
         try {
-            const dados = await boloesService.getAll();
-            setBoloes(dados);
+            const res = await boloesService.getPaginated({ page, limit: LIMIT });
+            setBoloes(res.data);
+            setTotalPages(res.pagination.totalPages);
+            setTotal(res.pagination.total);
         } catch (error) {
             console.error("Erro ao carregar bolões:", error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [page]);
 
-    const getBolaoById = async (id: number ): Promise<Bolao | undefined> => {
-        // Tenta achar na memória
-        const localBolao = boloes.find(b => b.id == id);
-        
-        if (localBolao) {
-            return localBolao; // Retorno imediato se já tiver
-        }
-
-        // Se não achou busca individualmente na API
+    const getBolaoById = async (id: number): Promise<Bolao | undefined> => {
+        const localBolao = boloes.find((b) => b.id == id);
+        if (localBolao) return localBolao;
         try {
-            const bolaoDaApi = await boloesService.getById(id);
-            return bolaoDaApi;
+            return await boloesService.getById(id);
         } catch (error) {
             console.error(`Erro ao buscar bolão ${id}:`, error);
             return undefined;
@@ -42,8 +42,8 @@ export const useBoloes = () => {
         setCreating(true);
         try {
             await boloesService.create({ nome });
-            await carregarBoloes(true);
-        } catch(error) {
+            await carregarBoloes(true); // recarrega a página atual
+        } catch (error) {
             console.error("Erro ao criar bolão:", error);
         } finally {
             setCreating(false);
@@ -54,22 +54,27 @@ export const useBoloes = () => {
         try {
             await boloesService.delete(id);
             await carregarBoloes(true);
-        } catch(error) {
+        } catch (error) {
             console.error("Erro ao deletar bolão:", error);
         }
     };
 
     useEffect(() => {
         carregarBoloes();
-    }, []);
+    }, [carregarBoloes]);
 
-    return { 
-        boloes, 
-        loading, 
-        criarBolao, 
+    return {
+        boloes,
+        loading,
+        criarBolao,
         creating,
         getBolaoById,
         deletarBolao,
-        refetch: carregarBoloes 
+        refetch: carregarBoloes,
+        // paginação
+        page,
+        setPage,
+        totalPages,
+        total,
     };
 };
