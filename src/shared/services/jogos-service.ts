@@ -15,7 +15,6 @@ export const jogosService = {
         return httpClient.get<Jogo[]>(`/jogos`);
     },
 
-    // Novo: busca paginada (envelope { data, pagination })
     getPaginated: (params: GetJogosParams = {}): Promise<Paginated<Jogo>> => {
         const query = new URLSearchParams();
         query.set('page', String(params.page ?? 1));
@@ -29,11 +28,15 @@ export const jogosService = {
         return httpClient.get<Jogo[]>(`/boloes/${bolaoId}/jogos`);
     },
 
-    // Agora envia data_jogo (opcional p/ não quebrar chamadas antigas)
+    // Cria jogo selecionando times já cadastrados (por id)
+    create: (data: { time_a_id: number; time_b_id: number; data_jogo: string }): Promise<Jogo> => {
+        return httpClient.post<Jogo>(`/jogos`, data);
+    },
+
+    // Mantido p/ compatibilidade (cria/busca time por nome)
     add: (timeA: string, timeB: string, dataJogo?: string): Promise<Jogo> => {
         return httpClient.post<Jogo>(`/jogos`, {
-            timeA,
-            timeB,
+            timeA, timeB,
             ...(dataJogo ? { data_jogo: dataJogo } : {}),
         });
     },
@@ -42,11 +45,17 @@ export const jogosService = {
         return httpClient.post<void>(`/boloes/${bolaoId}/jogos/${jogoId}`, {});
     },
 
+    update: (jogoId: string, dadosJogo: Partial<Jogo>): Promise<Jogo> => {
+        return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
+    },
+
+    // Remove o jogo do bolão (associação)
     delete: (bolaoId: string, jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/boloes/${bolaoId}/jogos/${jogoId}`);
     },
 
-    update: (jogoId: string, dadosJogo: Partial<Jogo>): Promise<Jogo> => {
-        return httpClient.put<Jogo>(`/jogos/${jogoId}`, dadosJogo);
+    // Exclui o jogo globalmente
+    deleteGlobal: (jogoId: string): Promise<void> => {
+        return httpClient.delete<void>(`/jogos/${jogoId}`);
     },
 };
