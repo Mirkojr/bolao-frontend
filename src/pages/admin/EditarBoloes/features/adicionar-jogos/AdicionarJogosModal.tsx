@@ -1,137 +1,217 @@
-import { useEffect, useState } from "react";
-import type { Jogo } from "@/shared/interfaces/jogo";
-import { jogosService } from "@/shared/services/jogos-service";
+import { BottomSheetModal } from "@/shared/components/BottomSheetModal";
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input";
 import { Pagination } from "@/shared/components/Pagination";
+import { rotuloDataHora } from "@/shared/utils/data-jogo";
+import { PERIODO_LABEL, SORT_LABEL, type JogoPeriodo, type JogoSort } from "@/shared/interfaces/jogo-filtros";
+import type { Jogo } from "@/shared/interfaces/jogo";
+import { useSelecaoJogos } from "./useSelecaoJogos";
 
-interface AdicionarJogosModalProps {
+const PERIODOS: JogoPeriodo[] = ["futuros", "semana", "hoje", "passados", "sem_data", "todos"];
+const ORDENS: JogoSort[] = ["proximos", "data_asc", "data_desc", "recentes"];
+
+interface Props {
     isOpen: boolean;
     onClose: () => void;
+    bolaoId: string;
     jogosNoBolao: Jogo[];
-    onAdd: (jogoId: string) => Promise<void>;
+    onAdicionado: () => Promise<void> | void;
     onCriarNovo: () => void;
-    reloadToken?: number; // muda quando um jogo novo é criado, p/ forçar recarregar
+    reloadToken?: number;
 }
 
-const LIMIT = 6;
-
 export const AdicionarJogosModal = ({
-    isOpen, onClose, jogosNoBolao, onAdd, onCriarNovo, reloadToken = 0,
-}: AdicionarJogosModalProps) => {
-    const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
-    const [jogos, setJogos] = useState<Jogo[]>([]);
-    const [totalPages, setTotalPages] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [addingId, setAddingId] = useState<number | null>(null);
+    isOpen, onClose, bolaoId, jogosNoBolao, onAdicionado, onCriarNovo, reloadToken = 0,
+}: Props) => {
+    const s = useSelecaoJogos({ bolaoId, isOpen, jogosNoBolao, reloadToken });
 
-    const idsNoBolao = new Set(jogosNoBolao.map((j) => j.id));
-
-    // Debounce da busca -> volta pra página 1
-    useEffect(() => {
-        if (!isOpen) return;
-        const t = setTimeout(() => setPage(1), 400);
-        return () => clearTimeout(t);
-    }, [search, isOpen]);
-
-    // Carrega jogos paginados
-    useEffect(() => {
-        if (!isOpen) return;
-        let ativo = true;
-        setLoading(true);
-        jogosService
-            .getPaginated({ page, limit: LIMIT, search })
-            .then((res) => {
-                if (!ativo) return;
-                setJogos(res.data);
-                setTotalPages(res.pagination.totalPages);
-            })
-            .catch((err) => console.error("Erro ao buscar jogos:", err))
-            .finally(() => { if (ativo) setLoading(false); });
-        return () => { ativo = false; };
-    }, [page, search, isOpen, reloadToken]);
-
-    const handleAdd = async (jogoId: number) => {
-        setAddingId(jogoId);
-        try {
-            await onAdd(String(jogoId));
-        } finally {
-            setAddingId(null);
-        }
+    const confirmar = async () => {
+        const ok = await s.adicionarSelecionados();
+        if (ok) { await onAdicionado(); onClose(); }
     };
 
-    if (!isOpen) return null;
+    const fechar = () => {
+        if (s.salvando) return;
+        if (s.selecionados.size > 0 && !confirm(`Descartar ${s.selecionados.size} jogo(s) selecionado(s)?`)) return;
+        onClose();
+    };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-            <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white shadow-xl"
-                onClick={(e) => e.stopPropagation()}>
+        <BottomSheetModal
+            isOpen={isOpen}
+            onClose={fechar}
+            title="Adicionar jogos ao bolão"
+            tall
+            flushBody
+            footer={
+                s.salvando ? (
+                    <div className="space-y-2">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                            <div className="h-full bg-green-500 transition-all" style={{ width: `${s.progresso}%` }} />
+                        </div>
+                        <p className="text-center text-sm text-gray-500">Adicionando… {s.progresso}%</p>
+                    </div>
+                ) : (
+                    <div className="flex gap-2">
+                        <Button variant="secondary" onClick={onCriarNovo} className="whitespace-nowrap">
+                            + Criar jogo
+                        </Button>
+                        <Button onClick={confirmar} disabled={s.selecionados.size === 0}>
+                            {s.selecionados.size === 0
+                                ? "Selecione os jogos"
+                                : `Adicionar ${s.selecionados.size} jogo${s.selecionados.size > 1 ? "s" : ""}`}
+                        </Button>
+                    </div>
+                )
+            }
+        >
+            {/* Contexto + busca + filtros */}
+            <div className="sticky top-0 z-10 space-y-3 border-b border-gray-100 bg-white p-4">
+                <p className="text-xs text-gray-500">
+                    Este bolão já tem <b>{jogosNoBolao.length}</b> jogo(s).
+                </p>
 
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-gray-100 p-5">
-                    <h2 className="text-lg font-semibold text-gray-800">Adicionar jogos ao bolão</h2>
-                    <button onClick={onClose} aria-label="Fechar"
-                        className="text-gray-400 hover:text-red-500 transition-colors text-xl leading-none">✕</button>
+                <Input
+                    fullWidth
+                    placeholder="Buscar por time (ex: Flamengo)…"
+                    value={s.searchInput}
+                    onChange={(e) => s.setSearchInput(e.target.value)}
+                />
+
+                {/* Chips de período */}
+                <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+                    {PERIODOS.map((p) => {
+                        const ativo = s.filtros.periodo === p;
+                        return (
+                            <button
+                                key={p}
+                                onClick={() => s.setPeriodo(p)}
+                                className={`h-9 shrink-0 rounded-full px-3 text-sm font-medium transition
+                                    ${ativo ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 active:bg-gray-200"}`}
+                            >
+                                {PERIODO_LABEL[p]}
+                            </button>
+                        );
+                    })}
                 </div>
 
-                {/* Busca + criar */}
-                <div className="flex flex-col sm:flex-row gap-3 p-5 border-b border-gray-100">
-                    <Input fullWidth placeholder="Buscar por time (ex: Flamengo)..."
-                        value={search} onChange={(e) => setSearch(e.target.value)} />
-                    <Button variant="success" onClick={onCriarNovo} className="whitespace-nowrap">
-                        + Criar novo jogo
-                    </Button>
-                </div>
+                {/* Ordenação + ocultar adicionados */}
+                <div className="flex flex-wrap items-center gap-3">
+                    <select
+                        value={s.filtros.sort}
+                        onChange={(e) => s.setSort(e.target.value as JogoSort)}
+                        className="h-9 rounded-lg border border-gray-200 bg-white px-2 text-sm text-gray-700"
+                    >
+                        {ORDENS.map((o) => (
+                            <option key={o} value={o}>{SORT_LABEL[o]}</option>
+                        ))}
+                    </select>
 
-                {/* Lista */}
-                <div className="flex-1 overflow-y-auto p-5">
-                    {loading ? (
-                        <p className="text-center text-gray-500 py-8">Carregando jogos...</p>
-                    ) : jogos.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">
-                            Nenhum jogo encontrado{search ? ` para "${search}"` : ""}.
-                        </p>
-                    ) : (
-                        <ul className="space-y-2">
-                            {jogos.map((jogo) => {
-                                const jaAdicionado = idsNoBolao.has(jogo.id);
-                                const timeA = jogo.timeA?.nome || "Time A";
-                                const timeB = jogo.timeB?.nome || "Time B";
-                                const data = jogo.data_jogo
-                                    ? new Date(jogo.data_jogo).toLocaleString("pt-BR", {
-                                          day: "2-digit", month: "2-digit", year: "numeric",
-                                          hour: "2-digit", minute: "2-digit",
-                                      })
-                                    : "Data a definir";
+                    <label className="flex items-center gap-2 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={s.ocultarAdicionados}
+                            onChange={(e) => s.setOcultarAdicionados(e.target.checked)}
+                            className="h-4 w-4 rounded border-gray-300"
+                        />
+                        Ocultar já adicionados
+                    </label>
 
-                                return (
-                                    <li key={jogo.id}
-                                        className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-3 hover:border-blue-300 hover:bg-blue-50/40 transition-colors">
-                                        <div className="min-w-0">
-                                            <p className="font-medium text-gray-800 truncate">
-                                                {timeA} <span className="text-gray-400">vs</span> {timeB}
-                                            </p>
-                                            <p className="text-xs text-gray-500">{data}</p>
-                                        </div>
-                                        <Button size="sm"
-                                            variant={jaAdicionado ? "secondary" : "primary"}
-                                            disabled={jaAdicionado || addingId === jogo.id}
-                                            onClick={() => handleAdd(jogo.id)}>
-                                            {jaAdicionado ? "Adicionado" : addingId === jogo.id ? "Adicionando..." : "Adicionar"}
-                                        </Button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                    {(s.filtrosAtivos > 0 || s.searchInput) && (
+                        <button onClick={s.limparFiltros} className="text-sm font-medium text-blue-600">
+                            Limpar
+                        </button>
                     )}
                 </div>
 
-                {/* Paginação */}
-                <div className="border-t border-gray-100 p-4">
-                    <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-                </div>
+                {s.jogos.length > 0 && (
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>{s.total} jogo(s) encontrados</span>
+                        <button onClick={s.selecionarPagina} className="font-medium text-blue-600">
+                            Selecionar todos desta página
+                        </button>
+                    </div>
+                )}
             </div>
-        </div>
+
+            {/* Lista */}
+            <div className="p-4">
+                {s.erro ? (
+                    <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
+                        <p className="text-sm text-red-700">{s.erro}</p>
+                        <button onClick={() => s.setPage(s.page)} className="mt-2 text-sm font-semibold text-red-700 underline">
+                            Tentar novamente
+                        </button>
+                    </div>
+                ) : s.loading ? (
+                    <p className="py-8 text-center text-gray-500">Carregando jogos…</p>
+                ) : s.jogos.length === 0 ? (
+                    <div className="py-8 text-center">
+                        <p className="text-gray-500">
+                            {s.ocultarAdicionados && s.brutos.length > 0
+                                ? "Todos os jogos desta página já estão no bolão."
+                                : "Nenhum jogo encontrado com esses filtros."}
+                        </p>
+                        <button onClick={onCriarNovo} className="mt-3 text-sm font-semibold text-blue-600">
+                            Criar um jogo novo
+                        </button>
+                    </div>
+                ) : (
+                    <ul className="space-y-2">
+                        {s.jogos.map((jogo) => {
+                            const jaAdicionado = s.idsNoBolao.has(jogo.id);
+                            const marcado = s.selecionados.has(jogo.id);
+
+                            return (
+                                <li key={jogo.id}>
+                                    <button
+                                        type="button"
+                                        disabled={jaAdicionado}
+                                        onClick={() => s.alternar(jogo.id)}
+                                        className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition
+                                            ${jaAdicionado
+                                                ? "border-gray-100 bg-gray-50 opacity-60"
+                                                : marcado
+                                                    ? "border-blue-500 bg-blue-50"
+                                                    : "border-gray-200 active:bg-gray-50"}`}
+                                    >
+                                        <span
+                                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 text-xs font-bold
+                                                ${marcado ? "border-blue-600 bg-blue-600 text-white" : "border-gray-300"}`}
+                                        >
+                                            {marcado ? "✓" : ""}
+                                        </span>
+
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block truncate font-medium text-gray-800">
+                                                {jogo.timeA?.nome ?? "Time A"}{" "}
+                                                <span className="text-gray-400">×</span>{" "}
+                                                {jogo.timeB?.nome ?? "Time B"}
+                                            </span>
+                                            <span className="block text-xs text-gray-500">
+                                                {jogo.data_jogo ? rotuloDataHora(jogo.data_jogo) : "Data a definir"}
+                                                {jogo.status === "FINALIZADO" && jogo.gol_a_real != null && (
+                                                    <> · <b className="tabular-nums">{jogo.gol_a_real}-{jogo.gol_b_real}</b></>
+                                                )}
+                                            </span>
+                                        </span>
+
+                                        {jaAdicionado && (
+                                            <span className="shrink-0 text-xs font-medium text-green-600">no bolão</span>
+                                        )}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
+
+                {s.totalPages > 1 && (
+                    <div className="pt-4">
+                        <Pagination page={s.page} totalPages={s.totalPages} onPageChange={s.setPage} />
+                    </div>
+                )}
+            </div>
+        </BottomSheetModal>
     );
 };

@@ -21,7 +21,11 @@ import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secaoParticipante";
 import { AdicionarJogosModal } from "./features/adicionar-jogos/AdicionarJogosModal";
 import { JogoFormModal } from "@/pages/admin/Jogos/components/JogoFormModal";
+import { PalpiteSheet } from "./features/palpitar/PalpiteSheet";
+import { ParticipantesPalpiteList } from "./features/palpitar/ParticipantesPalpiteList";
 
+// Interfaces
+import type { Participante } from "@/shared/interfaces/participante";
 
 // Contexto
 import { BolaoProvider } from "./context/bolao-context";
@@ -32,13 +36,14 @@ export const EditarBolaoPage = () => {
     const { isAuthenticated } = useAuth();
 
     const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
-    const { jogos, addJogoToBolao, loading: loadingJogos } = useJogos(bolaoId);
-    const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
+    const { jogos, loading: loadingJogos, refresh: refreshJogos } = useJogos(bolaoId);
+    const { palpites, savePalpite, loading: loadingPalpites, refresh: refreshPalpites } = usePalpites(bolaoId);
     const { allTeams, carregarTimes } = useTimes();
 
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [criarModalOpen, setCriarModalOpen] = useState(false);
     const [reloadToken, setReloadToken] = useState(0);
+    const [palpitando, setPalpitando] = useState<Participante | null>(null);
 
     useEffect(() => { carregarTimes(); }, [carregarTimes]);
 
@@ -58,8 +63,13 @@ export const EditarBolaoPage = () => {
         );
     }
 
+    // Cria o jogo e já vincula ao bolão — era o motivo de o usuário estar criando.
     const handleCriarJogo = async (dados: JogoFormData) => {
-        await jogosService.create(dados);
+        const novo = await jogosService.create(dados);
+        if (novo?.id) {
+            await jogosService.addJogoToBolao(bolaoId!, String(novo.id));
+            await refreshJogos();
+        }
         setReloadToken((t) => t + 1);
     };
 
@@ -82,9 +92,18 @@ export const EditarBolaoPage = () => {
                     </div>
                 </Section>
 
-                {/* TABELA DE PALPITES */}
-                <Section title="Tabela de Palpites" className="mb-6">
-                    <BolaoMatrixTable jogos={jogos} participantes={participantes} />
+                {/* PALPITES — lista guiada no mobile, matriz no desktop */}
+                <Section title="Palpites" className="mb-6">
+                    <div className="md:hidden">
+                        <ParticipantesPalpiteList
+                            participantes={participantes}
+                            jogos={jogos}
+                            onPalpitar={setPalpitando}
+                        />
+                    </div>
+                    <div className="hidden md:block">
+                        <BolaoMatrixTable jogos={jogos} participantes={participantes} />
+                    </div>
                 </Section>
 
                 {/* PARTICIPANTES */}
@@ -110,9 +129,10 @@ export const EditarBolaoPage = () => {
                 <AdicionarJogosModal
                     isOpen={addModalOpen}
                     onClose={() => setAddModalOpen(false)}
+                    bolaoId={bolaoId}
                     jogosNoBolao={jogos}
                     reloadToken={reloadToken}
-                    onAdd={async (jogoId) => { await addJogoToBolao(jogoId); }}
+                    onAdicionado={refreshJogos}
                     onCriarNovo={() => setCriarModalOpen(true)}
                 />
 
@@ -121,6 +141,15 @@ export const EditarBolaoPage = () => {
                     onClose={() => setCriarModalOpen(false)}
                     times={allTeams}
                     onSubmit={handleCriarJogo}
+                />
+
+                <PalpiteSheet
+                    isOpen={palpitando !== null}
+                    onClose={() => setPalpitando(null)}
+                    bolaoId={bolaoId}
+                    participante={palpitando}
+                    jogos={jogos}
+                    onSalvo={refreshPalpites}
                 />
             </div>
         </BolaoProvider>
