@@ -1,6 +1,9 @@
 import { httpClient } from '@/shared/api/httpClient';
 import type { Jogo } from '@/shared/interfaces/jogo';
 import type { Paginated } from '@/shared/interfaces/pagination';
+import type { JogoFiltros, JogoCounts } from "@/shared/interfaces/jogo-filtros.ts";
+
+export type JogosListagem = Paginated<Jogo> & { counts?: JogoCounts };
 
 interface GetJogosParams {
     page?: number;
@@ -69,5 +72,26 @@ export const jogosService = {
     // Exclui o jogo globalmente
     deleteGlobal: (jogoId: string): Promise<void> => {
         return httpClient.delete<void>(`/jogos/${jogoId}`);
+    },
+
+    /**
+     * Listagem paginada com filtros. Só envia os params que estão ativos,
+     * mantendo a URL limpa e o backend no comportamento padrão.
+     */
+    listar: async (
+        page: number,
+        limit: number,
+        filtros: Partial<JogoFiltros> = {}
+    ): Promise<JogosListagem> => {
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("limit", String(limit));
+
+        if (filtros.search?.trim()) params.set("search", filtros.search.trim());
+        if (filtros.status && filtros.status !== "todos") params.set("status", filtros.status);
+        if (filtros.periodo && filtros.periodo !== "todos") params.set("periodo", filtros.periodo);
+        if (filtros.sort && filtros.sort !== "proximos") params.set("sort", filtros.sort);
+
+        return httpClient.get<JogosListagem>(`/jogos?${params.toString()}`);
     },
 };
