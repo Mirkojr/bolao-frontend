@@ -36,6 +36,16 @@ async function handleResponse(response: Response, responseType: 'json' | 'blob' 
         throw new ApiError(401, 'Sessão expirada');
     }
 
+    if (response.status === 429) {
+        const dados = await response.json().catch(() => null);
+        const espera = Number(response.headers.get('RateLimit-Reset') ?? dados?.retryAfter ?? 60);
+        throw new ApiError(
+            429,
+            `Muitas requisições. Aguarde ${espera}s e tente novamente.`,
+            { ...dados, retryAfter: espera },
+        );
+    }
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new ApiError(response.status, errorData?.message || 'Erro na requisição', errorData);
