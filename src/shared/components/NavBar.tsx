@@ -28,16 +28,16 @@ export const NavBar = () => {
                         {/* Link Admin (Só aparece se estiver logado) */}
                         {isAuthenticated && (
                             <>
-                                <Link 
-                                    to="/admin/bolao-crud" 
-                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200"
-                                >
+                                <Link to="/admin/bolao-crud"
+                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
                                     Meus Bolões
                                 </Link>
-                                <Link
-                                    to="admin/times"
-                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200"
-                                >
+                                <Link to="/admin/jogos"
+                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
+                                    Jogos
+                                </Link>
+                                <Link to="/admin/times"
+                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
                                     Times
                                 </Link>
                             </>

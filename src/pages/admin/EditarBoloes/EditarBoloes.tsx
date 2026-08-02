@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 // Hooks
 import { useParticipantes } from "./hooks/useParticipantes";
 import { useJogos } from "@/shared/hooks/useJogos";
+import { useTimes } from "@/shared/hooks/useTimes";
 import { usePalpites } from "./hooks/usePalpites";
+import { jogosService } from "@/shared/services/jogos-service";
 
 // Componentes
 import { LoadingSpinner } from "./components/LoadingSpinner";
@@ -17,7 +19,7 @@ import { ExportButtons } from "@/shared/components/ExportButtons";
 import { BolaoMatrixTable } from "./features/tabela-palpites/tabela-palpites";
 import { ParticipantesSection } from "./features/secao-participantes/secaoParticipante";
 import { AdicionarJogosModal } from "./features/adicionar-jogos/AdicionarJogosModal";
-import { CriarJogoModal } from "./features/adicionar-jogos/CriarJogoModal";
+import { JogoFormModal } from "@/pages/admin/Jogos/components/JogoFormModal";
 
 // Contexto
 import { BolaoProvider } from "./context/bolao-context";
@@ -27,16 +29,16 @@ export const EditarBolaoPage = () => {
     const location = useLocation();
     const { isAuthenticated } = useAuth();
 
-    // Hooks de Dados
     const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
     const { jogos, addJogoToBolao, loading: loadingJogos } = useJogos(bolaoId);
-    const { addJogo, carregarJogos } = useJogos(); // jogos globais (criação)
     const { palpites, savePalpite, loading: loadingPalpites } = usePalpites(bolaoId);
+    const { allTeams, carregarTimes } = useTimes();
 
-    // Estado dos modais
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [criarModalOpen, setCriarModalOpen] = useState(false);
     const [reloadToken, setReloadToken] = useState(0);
+
+    useEffect(() => { carregarTimes(); }, [carregarTimes]);
 
     const bolaoState = location.state?.bolaoData;
     const nomeBolao = bolaoState?.nome || " Bolão ";
@@ -54,9 +56,8 @@ export const EditarBolaoPage = () => {
         );
     }
 
-    const handleCriarJogo = async (timeA: string, timeB: string, dataJogo: string) => {
-        await addJogo(timeA, timeB, dataJogo);
-        await carregarJogos();
+    const handleCriarJogo = async (dados: { time_a_id: number; time_b_id: number; data_jogo: string }) => {
+        await jogosService.create(dados);
         setReloadToken((t) => t + 1); // faz o modal de seleção recarregar já com o novo jogo
     };
 
@@ -74,9 +75,7 @@ export const EditarBolaoPage = () => {
                             <p className="text-gray-600">
                                 Adicione jogos ao bolão para que os participantes possam fazer seus palpites.
                             </p>
-                            <Button onClick={() => setAddModalOpen(true)}>
-                                + Adicionar / criar jogos
-                            </Button>
+                            <Button onClick={() => setAddModalOpen(true)}>+ Adicionar / criar jogos</Button>
                         </div>
                     </div>
                 </Section>
@@ -86,14 +85,14 @@ export const EditarBolaoPage = () => {
                     <BolaoMatrixTable jogos={jogos} participantes={participantes} />
                 </Section>
 
-                {/* SECAO DE PARTICIPANTES */}
+                {/* PARTICIPANTES */}
                 <ParticipantesSection
                     participantes={participantes}
                     onAdd={addParticipante}
                     onRemove={(id) => removeParticipante(bolaoId!, id)}
                 />
 
-                {/* SECAO DE EXPORTACAO */}
+                {/* EXPORTAR */}
                 <Section title="Exportar Bolão" className="mb-6">
                     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                         <p className="text-gray-600 mb-4">Exporte os dados do bolão em formato Excel ou PDF.</p>
@@ -115,10 +114,11 @@ export const EditarBolaoPage = () => {
                     onCriarNovo={() => setCriarModalOpen(true)}
                 />
 
-                <CriarJogoModal
+                <JogoFormModal
                     isOpen={criarModalOpen}
                     onClose={() => setCriarModalOpen(false)}
-                    onCriar={handleCriarJogo}
+                    times={allTeams}
+                    onSubmit={handleCriarJogo}
                 />
             </div>
         </BolaoProvider>
