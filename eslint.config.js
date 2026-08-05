@@ -15,12 +15,9 @@ export default defineConfig([
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
-      importPlugin.configs.recommended,
-      importPlugin.configs.typescript,
+      importPlugin.flatConfigs.recommended,
+      importPlugin.flatConfigs.typescript,
     ],
-    plugins: {
-      import: importPlugin,
-    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -31,9 +28,7 @@ export default defineConfig([
     settings: {
       'import/resolver': {
         typescript: {
-          aliasDirs: {
-            '@': './src',
-          },
+          project: ['./tsconfig.app.json'],
         },
       },
     },

@@ -30,10 +30,31 @@ const getHeaders = (customHeaders?: HeadersInit, body?: unknown) => {
     return headers;
 };
 
-async function handleResponse(response: Response, responseType: 'json' | 'blob' = 'json') {
+const isRotaDeAutenticacao = (endpoint: string) => endpoint.startsWith('/auth');
+
+async function handleResponse(
+    response: Response,
+    responseType: 'json' | 'blob' = 'json',
+    endpoint = '',
+) {
     if (response.status === 401) {
-        window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
-        throw new ApiError(401, 'Sessão expirada');
+        const dados = await response.json().catch(() => null);
+        const tinhaToken = !!localStorage.getItem('meu_token');
+
+        // Só é sessão expirada se o usuário JÁ estava autenticado e a chamada
+        // não era a própria tentativa de login.
+        if (tinhaToken && !isRotaDeAutenticacao(endpoint)) {
+            window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
+            throw new ApiError(401, 'Sua sessão expirou. Faça login novamente.', dados);
+        }
+
+        // Credencial inválida: preserva a mensagem do backend e NÃO desloga.
+        throw new ApiError(401, dados?.message || 'E-mail ou senha inválidos.', dados);
+    }
+
+    if (response.status === 403) {
+        const dados = await response.json().catch(() => null);
+        throw new ApiError(403, dados?.message || 'Você não tem permissão para essa ação.', dados);
     }
 
     if (response.status === 429) {
@@ -60,6 +81,7 @@ async function handleResponse(response: Response, responseType: 'json' | 'blob' 
 
     return response.json();
 }
+
 
 // Estendemos as opções para incluir o responseType opcional
 interface FetchOptions extends Omit<RequestInit, 'method' | 'body'> {
