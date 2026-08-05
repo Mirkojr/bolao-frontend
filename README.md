@@ -100,30 +100,31 @@ src/
 
 ### Demonstração Visual
 
-#### 1. Tela Inicial e Login
-Tela de login simples e funcional, com validação de credenciais 
+#### 1. Telas iniciais
+Login e tela inicial da aplicação.
 
-![Tela Inicial e Login](assets/tela-inicial.png)
-![Tela Inicial e Login](assets/tela-login.png)
+![Tela inicial](assets/tela-inicial.png)
+![Tela de login](assets/tela-login.png)
 
-#### 2. Gestão de Placar (Admin)
-O administrador tem uma ferramenta exclusiva para atualizar os resultados reais dos jogos direto nos cards.
-![Demonstração da Atualização do Placar](assets/update-placar-demo.gif)
+#### 2. Gestão de times e jogos
+Fluxo de administração para cadastrar times, criar jogos e navegar entre os cadastros.
 
-#### 3. Gestão de Participantes
+![Gestão de times](assets/tela_times.gif)
+![Gestão de jogos](assets/tela-jogos.gif)
+
+#### 3. Tabela de palpites
+Visualização dos palpites em desktop e mobile, com destaque de cor conforme o resultado.
+
+![Tabela de palpites no desktop](assets/desktop-tabela.gif)
+![Tabela de palpites no celular](assets/celular_tabela.gif)
+
+Casos de destaque:
+- Palpite correto: destaque verde
+- Palpite incorreto: destaque vermelho
+- Palpite parcialmente correto: destaque amarelo
+- Palpite não avaliado: sem destaque
+
+#### 4. Remoção de participante
 Fluxo dinâmico para remover participantes do bolão com confirmação visual.
-![Demonstração da Exclusão de Participante](assets/exclusao-participante-demo.gif)
 
-#### 4. Visão Geral de Times e Jogos
-Central de gerenciamento onde o admin visualiza todos os times cadastrados ao adicionar uma partida.
-![Tela Seção Times e Jogos](assets/tela-secao-times-jogos.png)
-
-### 5. Tabela de Palpites 
-Tabela clara e organizada para visualizar os palpites dos participantes, com destaque para os resultados corretos.
-
-Casos:
-- Palpite correto: Destaque verde
-- Palpite incorreto: Destaque vermelho
-- Palpite parcialmente correto: Destaque azul
-- Palpite não avaliado: Sem destaque
-![Tabela de Palpites](assets/tabela-palpites.png)
+![Demonstração da exclusão de participante](assets/exclusao-participante-demo.gif)
