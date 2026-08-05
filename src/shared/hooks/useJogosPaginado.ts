@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import {
@@ -14,12 +14,12 @@ export const useJogosPaginado = () => {
 
     // --- estado derivado da URL (permite compartilhar/favoritar/voltar) ------
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
-    const filtros: JogoFiltros = {
+    const filtros = useMemo<JogoFiltros>(() => ({
         search: searchParams.get("search") ?? "",
         status: (searchParams.get("status") as JogoStatus) ?? FILTROS_PADRAO.status,
         periodo: (searchParams.get("periodo") as JogoPeriodo) ?? FILTROS_PADRAO.periodo,
         sort: (searchParams.get("sort") as JogoSort) ?? FILTROS_PADRAO.sort,
-    };
+    }), [searchParams]);
 
     // input de busca é local (digitação) e vai pra URL com debounce
     const [searchInput, setSearchInput] = useState(filtros.search);
@@ -83,7 +83,7 @@ export const useJogosPaginado = () => {
             setLoading(false);
             primeiraRenderizacao.current = false;
         }
-    }, [page, filtros.search, filtros.status, filtros.periodo, filtros.sort]);
+    }, [page, filtros]);
 
     useEffect(() => { carregar(); }, [carregar]);
 
