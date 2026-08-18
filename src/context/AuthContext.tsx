@@ -50,6 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = useCallback(() => {
         setUser(null);
         clearAuthData();
+
+        if (window.location.pathname.startsWith('/admin')) {
+            window.location.href = '/login'; 
+        }
     }, []);
 
     // -- EFEITOS --

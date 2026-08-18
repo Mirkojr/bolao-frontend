@@ -26,7 +26,7 @@ export const NavBar = () => {
                         </Link>
 
                         {/* Link Admin (Só aparece se estiver logado) */}
-                        {isAuthenticated && (
+                        {isAuthenticated && user?.role === "ADMIN" && (
                             <>
                                 <Link to="/admin/bolao-crud"
                                     className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">

@@ -10,6 +10,7 @@ import { TimesPage } from '@/pages/admin/Times/TimesPage';
 import { JogosPage } from '@/pages/admin/Jogos/JogosPage';
 import { RecalcularTudo } from '@/pages/admin/RecalcularTudo/RecalcularTudo';
 
+import { AdminRoute } from '@/routes/AdminRoute';
 import { MainLayout } from '@/layout/MainLayout/MainLayout';
 
 export const AppRoutes = () => {
@@ -19,11 +20,14 @@ export const AppRoutes = () => {
                 <Routes>
                     <Route element={<MainLayout />}>
                         <Route path="/" element={<Home />} />
-                        <Route path="/admin/bolao-crud" element={<AdminBolaoPage />} />
-                        <Route path="/admin/edit/:id" element={<EditarBolaoPage />} />
-                        <Route path="/admin/times" element={<TimesPage />} />
-                        <Route path="/admin/jogos" element={<JogosPage />} />
-                        <Route path="/admin/recalcular-tudo" element={<RecalcularTudo />} />
+
+                        <Route element={<AdminRoute />}>
+                            <Route path="/admin/bolao-crud" element={<AdminBolaoPage />} />
+                            <Route path="/admin/edit/:id" element={<EditarBolaoPage />} />
+                            <Route path="/admin/times" element={<TimesPage />} />
+                            <Route path="/admin/jogos" element={<JogosPage />} />
+                            <Route path="/admin/recalcular-tudo" element={<RecalcularTudo />} />
+                        </Route>
                     </Route>
 
                     <Route path="login" element={<Login />} />
