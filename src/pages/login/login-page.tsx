@@ -93,6 +93,17 @@ export const Login = () => {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Ainda não tem uma conta?{' '}
+          <button
+            type="button"
+            onClick={() => navigate('/cadastro')}
+            className="font-medium text-green-700 hover:text-green-800"
+          >
+            Cadastre-se
+          </button>
+        </p>
       </div>
     </div>
   );

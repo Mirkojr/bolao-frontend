@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import Home from '@/pages/home';
 import { AdminBolaoPage } from '@/pages/admin/ListarBoloes/ListarBoloes';
 import { Login } from '@/pages/login/login-page';
+import { Register } from '@/pages/login/register-page';
 import { EditarBolaoPage } from '@/pages/admin/EditarBoloes/EditarBoloes';
 import { NotFoundPage } from '@/pages/not-found/not-found-page';
 import { TimesPage } from '@/pages/admin/Times/TimesPage';
@@ -31,6 +32,7 @@ export const AppRoutes = () => {
                     </Route>
 
                     <Route path="login" element={<Login />} />
+                    <Route path="cadastro" element={<Register />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </AuthProvider>
