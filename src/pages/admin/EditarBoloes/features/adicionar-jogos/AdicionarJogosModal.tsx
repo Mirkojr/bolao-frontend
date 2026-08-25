@@ -17,11 +17,12 @@ interface Props {
     jogosNoBolao: Jogo[];
     onAdicionado: () => Promise<void> | void;
     onCriarNovo: () => void;
+    isAdmin: boolean;
     reloadToken?: number;
 }
 
 export const AdicionarJogosModal = ({
-    isOpen, onClose, bolaoId, jogosNoBolao, onAdicionado, onCriarNovo, reloadToken = 0,
+    isOpen, onClose, bolaoId, jogosNoBolao, onAdicionado, onCriarNovo, isAdmin, reloadToken = 0,
 }: Props) => {
     const s = useSelecaoJogos({ bolaoId, isOpen, jogosNoBolao, reloadToken });
 
@@ -53,9 +54,11 @@ export const AdicionarJogosModal = ({
                     </div>
                 ) : (
                     <div className="flex gap-2">
-                        <Button variant="secondary" onClick={onCriarNovo} className="whitespace-nowrap">
-                            + Criar jogo
-                        </Button>
+                        {isAdmin && (
+                            <Button variant="secondary" onClick={onCriarNovo} className="whitespace-nowrap">
+                                + Criar jogo
+                            </Button>
+                        )}
                         <Button onClick={confirmar} disabled={s.selecionados.size === 0}>
                             {s.selecionados.size === 0
                                 ? "Selecione os jogos"
@@ -152,9 +155,11 @@ export const AdicionarJogosModal = ({
                                 ? "Todos os jogos desta página já estão no bolão."
                                 : "Nenhum jogo encontrado com esses filtros."}
                         </p>
-                        <button onClick={onCriarNovo} className="mt-3 text-sm font-semibold text-blue-600">
-                            Criar um jogo novo
-                        </button>
+                            {isAdmin && (
+                                <button onClick={onCriarNovo} className="mt-3 text-sm font-semibold text-blue-600">
+                                    Criar um jogo novo
+                                </button>
+                            )}
                     </div>
                 ) : (
                     <ul className="space-y-2">

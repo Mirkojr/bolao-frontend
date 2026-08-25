@@ -33,7 +33,7 @@ import { BolaoProvider } from "./context/bolao-context";
 export const EditarBolaoPage = () => {
     const { id: bolaoId } = useParams();
     const location = useLocation();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
     const { participantes, addParticipante, removeParticipante, loading: loadingPart } = useParticipantes(bolaoId);
     const { jogos, loading: loadingJogos, refresh: refreshJogos } = useJogos(bolaoId);
@@ -44,6 +44,7 @@ export const EditarBolaoPage = () => {
     const [criarModalOpen, setCriarModalOpen] = useState(false);
     const [reloadToken, setReloadToken] = useState(0);
     const [palpitando, setPalpitando] = useState<Participante | null>(null);
+    const isAdmin = user?.role === 'ADMIN';
 
     useEffect(() => { carregarTimes(); }, [carregarTimes]);
 
@@ -51,7 +52,7 @@ export const EditarBolaoPage = () => {
     const nomeBolao = bolaoState?.nome || " Bolão ";
 
     if (!isAuthenticated) {
-        return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login como administrador.</div>;
+        return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login para acessar este bolão.</div>;
     }
     if (!bolaoId) return <div>ID do bolão não encontrado.</div>;
 
@@ -77,8 +78,12 @@ export const EditarBolaoPage = () => {
         <BolaoProvider palpites={palpites} onSavePalpite={savePalpite}>
             <div className="p-6 bg-gray-50 min-h-screen">
                 <h1 className="text-2xl font-bold mb-4 text-gray-800">
-                    Gerenciar Bolão #{bolaoId}: <span className="text-blue-600">{nomeBolao}</span>
+                    Meu Bolão #{bolaoId}: <span className="text-blue-600">{nomeBolao}</span>
                 </h1>
+
+                <p className="mb-6 text-sm text-gray-600">
+                    Você pode organizar este bolão com os jogos disponíveis. Jogos e times são cadastrados pela administração.
+                </p>
 
                 {/* SECAO DE ADICIONAR JOGOS */}
                 <Section title="Adicionar Jogos" className="mb-6">
@@ -87,7 +92,7 @@ export const EditarBolaoPage = () => {
                             <p className="text-gray-600">
                                 Adicione jogos ao bolão para que os participantes possam fazer seus palpites.
                             </p>
-                            <Button onClick={() => setAddModalOpen(true)}>+ Adicionar / criar jogos</Button>
+                            <Button onClick={() => setAddModalOpen(true)}>Adicionar jogos disponíveis</Button>
                         </div>
                     </div>
                 </Section>
@@ -134,14 +139,17 @@ export const EditarBolaoPage = () => {
                     reloadToken={reloadToken}
                     onAdicionado={refreshJogos}
                     onCriarNovo={() => setCriarModalOpen(true)}
+                    isAdmin={isAdmin}
                 />
 
-                <JogoFormModal
-                    isOpen={criarModalOpen}
-                    onClose={() => setCriarModalOpen(false)}
-                    times={allTeams}
-                    onSubmit={handleCriarJogo}
-                />
+                {isAdmin && (
+                    <JogoFormModal
+                        isOpen={criarModalOpen}
+                        onClose={() => setCriarModalOpen(false)}
+                        times={allTeams}
+                        onSubmit={handleCriarJogo}
+                    />
+                )}
 
                 <PalpiteSheet
                     isOpen={palpitando !== null}

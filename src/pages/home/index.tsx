@@ -18,7 +18,7 @@ function Home() {
 
                     <p className="text-lg text-gray-600 md:text-xl max-w-2xl mx-auto">
                         {isAuthenticated 
-                            ? 'Você está conectado. Acesse o painel administrativo para gerenciar os bolões.'
+                            ? 'Você está conectado. Acesse seus bolões para criar e administrar suas competições.'
                             : 'Gerencie seus bolões de forma fácil e rápida. Por favor, faça login para acessar todas as funcionalidades.'}
                     </p>
 
@@ -27,10 +27,10 @@ function Home() {
                         {isAuthenticated ? (
                             <>
                                 <Link 
-                                    to="/admin/bolao-crud" 
+                                    to="/boloes" 
                                     className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-300 transform hover:-translate-y-1"
                                 >
-                                    Acessar Painel Admin
+                                    Acessar Meus Bolões
                                 </Link>
                                 <button 
                                     onClick={logout}

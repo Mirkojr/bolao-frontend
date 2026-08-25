@@ -21,7 +21,7 @@ export const BoloesTable = ({ boloes, onBolaoDeleted }: BoloesTablePropsUpdated)
           {boloes.map((bolao) => (
             <tr key={bolao.id} className="bg-white border-b hover:bg-gray-50">
               <td className="px-6 py-4 font-medium text-gray-900">
-                <Link to={`/admin/edit/${bolao.id}`} state={{ bolaoData: bolao }} className="hover:text-green-600 hover:underline transition-colors">
+                <Link to={`/boloes/${bolao.id}`} state={{ bolaoData: bolao }} className="hover:text-green-600 hover:underline transition-colors">
                   {bolao.nome}
                 </Link>
               </td>

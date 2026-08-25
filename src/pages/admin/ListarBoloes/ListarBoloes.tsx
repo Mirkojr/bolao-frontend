@@ -17,13 +17,18 @@ export const AdminBolaoPage = () => {
     };
 
     if (!isAuthenticated) {
-        return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login como administrador.</div>;
+        return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login para acessar seus bolões.</div>;
     }
 
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Gerenciar Bolões</h1>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-800">Meus Bolões</h1>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Crie e administre seus bolões usando os jogos disponíveis no sistema.
+                    </p>
+                </div>
             </div>
 
             <AddBolaoForm onCriar={criarBolao} isCreating={creating} />

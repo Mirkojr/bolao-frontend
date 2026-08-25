@@ -25,21 +25,24 @@ export const NavBar = () => {
                             Início
                         </Link>
 
-                        {/* Link Admin (Só aparece se estiver logado) */}
-                        {isAuthenticated && user?.role === "ADMIN" && (
+                        {isAuthenticated && (
                             <>
-                                <Link to="/admin/bolao-crud"
+                                <Link to="/boloes"
                                     className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
                                     Meus Bolões
                                 </Link>
-                                <Link to="/admin/jogos"
-                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
-                                    Jogos
-                                </Link>
-                                <Link to="/admin/times"
-                                    className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
-                                    Times
-                                </Link>
+                                {user?.role === "ADMIN" && (
+                                    <>
+                                        <Link to="/admin/jogos"
+                                            className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
+                                            Jogos
+                                        </Link>
+                                        <Link to="/admin/times"
+                                            className="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">
+                                            Times
+                                        </Link>
+                                    </>
+                                )}
                             </>
                         )}
 

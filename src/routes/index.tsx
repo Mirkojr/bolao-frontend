@@ -12,6 +12,7 @@ import { JogosPage } from '@/pages/admin/Jogos/JogosPage';
 import { RecalcularTudo } from '@/pages/admin/RecalcularTudo/RecalcularTudo';
 
 import { AdminRoute } from '@/routes/AdminRoute';
+import { AuthenticatedRoute } from '@/routes/AuthenticatedRoute';
 import { MainLayout } from '@/layout/MainLayout/MainLayout';
 
 export const AppRoutes = () => {
@@ -22,9 +23,12 @@ export const AppRoutes = () => {
                     <Route element={<MainLayout />}>
                         <Route path="/" element={<Home />} />
 
+                        <Route element={<AuthenticatedRoute />}>
+                            <Route path="/boloes" element={<AdminBolaoPage />} />
+                            <Route path="/boloes/:id" element={<EditarBolaoPage />} />
+                        </Route>
+
                         <Route element={<AdminRoute />}>
-                            <Route path="/admin/bolao-crud" element={<AdminBolaoPage />} />
-                            <Route path="/admin/edit/:id" element={<EditarBolaoPage />} />
                             <Route path="/admin/times" element={<TimesPage />} />
                             <Route path="/admin/jogos" element={<JogosPage />} />
                             <Route path="/admin/recalcular-tudo" element={<RecalcularTudo />} />

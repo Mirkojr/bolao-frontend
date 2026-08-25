@@ -25,7 +25,7 @@ export const Login = () => {
       if (resposta.token && resposta.user) {
         localStorage.setItem('meu_token', resposta.token); 
         login(resposta.user); 
-        navigate('/admin/bolao-crud');
+        navigate('/boloes');
     
       } else {
         setErro('Erro de comunicação: Dados incompletos.');
