@@ -59,7 +59,10 @@ http://localhost:5173/
 - `npm run dev`: sobe a aplicação em modo de desenvolvimento
 - `npm run build`: gera o build de produção
 - `npm run lint`: executa a análise estática com ESLint
+- `npm test`: roda os testes (Vitest + Testing Library); `npm run test:watch` para o modo interativo
 - `npm run preview`: visualiza o build localmente
+
+No GitHub Actions (`.github/workflows/ci.yml`), cada push e pull request roda lint, testes e build.
 
 ## Backend necessário
 
