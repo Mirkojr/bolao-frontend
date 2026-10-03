@@ -1,5 +1,5 @@
 export type JogoStatus = "todos" | "agendado" | "finalizado";
-export type JogoPeriodo = "todos" | "hoje" | "semana" | "futuros" | "passados" | "sem_data";
+export type JogoPeriodo = "todos" | "hoje" | "semana" | "futuros" | "passados";
 export type JogoSort = "proximos" | "data_asc" | "data_desc" | "recentes";
 
 export type JogoFiltros = {
@@ -29,7 +29,6 @@ export const PERIODO_LABEL: Record<JogoPeriodo, string> = {
     semana: "Próximos 7 dias",
     futuros: "A realizar",
     passados: "Já realizados",
-    sem_data: "Sem data definida",
 };
 
 export const SORT_LABEL: Record<JogoSort, string> = {

@@ -30,13 +30,17 @@ npm install
 
 ## Variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do frontend com a URL da API:
+Crie o `.env` a partir do exemplo:
+
+```bash
+cp .env.example .env
+```
 
 ```env
 VITE_API_URL=http://localhost:3000
 ```
 
-O cliente HTTP usa essa variável para montar as requisições ao backend.
+O cliente HTTP usa essa variável para montar as requisições ao backend. A porta deve ser a mesma do `PORT` do backend (`3000` por padrão). O `.env` não é versionado.
 
 ## Como rodar em desenvolvimento
 
@@ -55,7 +59,10 @@ http://localhost:5173/
 - `npm run dev`: sobe a aplicação em modo de desenvolvimento
 - `npm run build`: gera o build de produção
 - `npm run lint`: executa a análise estática com ESLint
+- `npm test`: roda os testes (Vitest + Testing Library); `npm run test:watch` para o modo interativo
 - `npm run preview`: visualiza o build localmente
+
+No GitHub Actions (`.github/workflows/ci.yml`), cada push e pull request roda lint, testes e build.
 
 ## Backend necessário
 
@@ -65,8 +72,11 @@ Se o backend estiver no mesmo repositório local, entre na pasta da API e suba o
 
 ```bash
 cd bolao-backend-api
-docker compose up -d
+cp .env.example .env
+docker compose up -d --build
 ```
+
+Com o `.env.example` do backend, o login do admin é `admin@email.com` / `admin123`. Para popular o banco com dados de exemplo, rode `docker compose exec api npm run seed:reset` (login `admin@bolao.com` / `123456`). Veja o README do backend para mais detalhes.
 
 ## Estrutura do projeto
 

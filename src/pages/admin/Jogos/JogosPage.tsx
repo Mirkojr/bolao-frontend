@@ -47,7 +47,12 @@ export const JogosPage = () => {
     const handleDelete = async (j: Jogo) => {
         const nome = `${j.timeA?.nome ?? "Time A"} vs ${j.timeB?.nome ?? "Time B"}`;
         if (confirm(`Excluir o jogo "${nome}"? Essa ação não pode ser desfeita.`)) {
-            await deletarJogo(String(j.id));
+            try {
+                await deletarJogo(String(j.id));
+            } catch (e) {
+                // ex.: 409 quando há palpites/jogos vinculados
+                alert(e instanceof Error ? e.message : "Não foi possível excluir.");
+            }
         }
     };
 

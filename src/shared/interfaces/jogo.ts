@@ -5,7 +5,7 @@ export interface Jogo {
     time_a_id: number;
     time_b_id: number;
     data_jogo: string;
-    status: 'AGENDADO' | 'EM_ANDAMENTO' | 'FINALIZADO'; 
+    status: 'AGENDADO' | 'FINALIZADO'; // derivado do placar
     timeA?: Time;
     timeB?: Time;
     gol_a_real?: number | null;

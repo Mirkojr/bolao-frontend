@@ -7,7 +7,7 @@ import { PERIODO_LABEL, SORT_LABEL, type JogoPeriodo, type JogoSort } from "@/sh
 import type { Jogo } from "@/shared/interfaces/jogo";
 import { useSelecaoJogos } from "./useSelecaoJogos";
 
-const PERIODOS: JogoPeriodo[] = ["futuros", "semana", "hoje", "passados", "sem_data", "todos"];
+const PERIODOS: JogoPeriodo[] = ["futuros", "semana", "hoje", "passados", "todos"];
 const ORDENS: JogoSort[] = ["proximos", "data_asc", "data_desc", "recentes"];
 
 interface Props {
