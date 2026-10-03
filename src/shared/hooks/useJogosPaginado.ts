@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { Jogo } from "@/shared/interfaces/jogo";
 import {
-    FILTROS_PADRAO, type JogoCounts, type JogoFiltros,
+    FILTROS_PADRAO, PERIODO_LABEL, type JogoCounts, type JogoFiltros,
     type JogoPeriodo, type JogoSort, type JogoStatus,
 } from "@/shared/interfaces/jogo-filtros";
 import { jogosService } from "@/shared/services/jogos-service";
+
+const lerPeriodo = (valor: string | null): JogoPeriodo =>
+    valor && Object.hasOwn(PERIODO_LABEL, valor) ? (valor as JogoPeriodo) : FILTROS_PADRAO.periodo;
 
 const LIMITE = 10;
 
@@ -17,7 +20,8 @@ export const useJogosPaginado = () => {
     const filtros = useMemo<JogoFiltros>(() => ({
         search: searchParams.get("search") ?? "",
         status: (searchParams.get("status") as JogoStatus) ?? FILTROS_PADRAO.status,
-        periodo: (searchParams.get("periodo") as JogoPeriodo) ?? FILTROS_PADRAO.periodo,
+        // valor desconhecido na URL (ex.: link antigo) cai no padrão
+        periodo: lerPeriodo(searchParams.get("periodo")),
         sort: (searchParams.get("sort") as JogoSort) ?? FILTROS_PADRAO.sort,
     }), [searchParams]);
 
