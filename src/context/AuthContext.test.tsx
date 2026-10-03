@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, AVISO_SESSAO_EXPIRADA, lerExpiracaoDoToken, useAuth } from './AuthContext';
 import { AUTH_LOGOUT_EVENT } from '@/shared/api/httpClient';
 import type { User } from '@/shared/interfaces/user';
 
@@ -58,3 +58,47 @@ describe('AuthContext', () => {
         expect(() => render(<Espiao />)).toThrow('useAuth deve ser usado obrigatoriamente dentro de um AuthProvider');
     });
 });
+
+// JWT de teste (só o payload importa: a assinatura não é verificada no navegador)
+const jwtComExp = (expSegundos: number) =>
+    `cabecalho.${btoa(JSON.stringify({ id: 7, exp: expSegundos })).replace(/=+$/, '')}.assinatura`;
+
+describe('expiração da sessão', () => {
+    afterEach(() => {
+        vi.useRealTimers();
+        sessionStorage.clear();
+    });
+
+    it('lê o exp do token', () => {
+        expect(lerExpiracaoDoToken(jwtComExp(1_900_000_000))).toBe(1_900_000_000_000);
+        expect(lerExpiracaoDoToken('lixo')).toBeNull();
+    });
+
+    it('desloga sozinho quando o token expira e deixa o aviso para a tela de login', () => {
+        vi.useFakeTimers();
+        const agora = Date.now();
+        localStorage.setItem('meu_token', jwtComExp(Math.floor(agora / 1000) + 60)); // expira em 1 min
+        localStorage.setItem('u_data', JSON.stringify({ ...usuario, id: '7' }));
+        montar();
+        expect(screen.getByText('logado:Ana')).toBeInTheDocument();
+
+        act(() => { vi.advanceTimersByTime(59_000); });
+        expect(screen.getByText('logado:Ana')).toBeInTheDocument();
+
+        act(() => { vi.advanceTimersByTime(2_000); });
+        expect(screen.getByText('deslogado')).toBeInTheDocument();
+        expect(localStorage.getItem('meu_token')).toBeNull();
+        expect(sessionStorage.getItem(AVISO_SESSAO_EXPIRADA)).toBe('1');
+    });
+
+    it('token já vencido ao abrir o app desloga em seguida', () => {
+        vi.useFakeTimers();
+        localStorage.setItem('meu_token', jwtComExp(Math.floor(Date.now() / 1000) - 10));
+        localStorage.setItem('u_data', JSON.stringify({ ...usuario, id: '7' }));
+        montar();
+
+        act(() => { vi.advanceTimersByTime(0); });
+        expect(screen.getByText('deslogado')).toBeInTheDocument();
+    });
+});
+

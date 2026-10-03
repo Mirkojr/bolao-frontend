@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "@/shared/api/httpClient";
 
 // Hooks
 import { useParticipantes } from "./hooks/useParticipantes";
@@ -8,12 +9,14 @@ import { useJogos } from "@/shared/hooks/useJogos";
 import { useTimes } from "@/shared/hooks/useTimes";
 import { usePalpites } from "./hooks/usePalpites";
 import { jogosService } from "@/shared/services/jogos-service";
+import { boloesService } from "@/shared/services/bolao-service";
 
 // Componentes
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { Section } from "./components/Section";
 import { Button } from "@/shared/components/Button";
 import { ExportButtons } from "@/shared/components/ExportButtons";
+import { ErrorState } from "@/shared/components/ErrorState";
 import type { JogoFormData } from "@/pages/admin/Jogos/components/JogoFormModal";
 
 // Features
@@ -26,6 +29,7 @@ import { ParticipantesPalpiteList } from "./features/palpitar/ParticipantesPalpi
 
 // Interfaces
 import type { Participante } from "@/shared/interfaces/participante";
+import type { Bolao } from "@/shared/interfaces/bolao";
 
 // Contexto
 import { BolaoProvider } from "./context/bolao-context";
@@ -48,13 +52,43 @@ export const EditarBolaoPage = () => {
 
     useEffect(() => { carregarTimes(); }, [carregarTimes]);
 
+    // Busca o próprio bolão: dá o nome certo (inclusive ao abrir por link) e
+    // detecta acesso negado (403) ou bolão inexistente (404) logo de cara.
+    const [bolao, setBolao] = useState<Bolao | null>(null);
+    const [erroBolao, setErroBolao] = useState<unknown>(null);
+    const [tentativa, setTentativa] = useState(0);
+    useEffect(() => {
+        if (!bolaoId) return;
+        let ativo = true;
+        boloesService.getById(Number(bolaoId))
+            .then((b) => { if (ativo) { setBolao(b); setErroBolao(null); } })
+            .catch((e) => { if (ativo) setErroBolao(e); });
+        return () => { ativo = false; };
+    }, [bolaoId, tentativa]);
+
     const bolaoState = location.state?.bolaoData;
-    const nomeBolao = bolaoState?.nome || " Bolão ";
+    const nomeBolao = bolao?.nome || bolaoState?.nome || " Bolão ";
 
     if (!isAuthenticated) {
         return <div className="p-6 text-red-500">Acesso negado. Por favor, faça login para acessar este bolão.</div>;
     }
     if (!bolaoId) return <div>ID do bolão não encontrado.</div>;
+
+    if (erroBolao) {
+        const status = erroBolao instanceof ApiError ? erroBolao.status : 0;
+        return (
+            <div className="mx-auto max-w-lg p-6">
+                <ErrorState
+                    erro={erroBolao}
+                    // 403/404 não se resolvem tentando de novo; erro de conexão, sim
+                    onTentarNovamente={status === 403 || status === 404 ? undefined : () => setTentativa((t) => t + 1)}
+                />
+                <p className="mt-4 text-center">
+                    <Link to="/boloes" className="text-blue-600 hover:underline">Voltar para meus bolões</Link>
+                </p>
+            </div>
+        );
+    }
 
     if (participantes.length === 0 && jogos.length === 0 && loadingPart) {
         return (

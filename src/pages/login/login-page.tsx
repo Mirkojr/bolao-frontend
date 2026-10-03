@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from './services/login-service';
-import { useAuth } from '@/context/AuthContext';
+import { AVISO_SESSAO_EXPIRADA, useAuth } from '@/context/AuthContext';
 import { ApiError } from '@/shared/api/httpClient';
 
 export const Login = () => {
@@ -11,6 +11,10 @@ export const Login = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  const [sessaoExpirou] = useState(() => sessionStorage.getItem(AVISO_SESSAO_EXPIRADA) === '1');
+
+  // o aviso aparece uma vez só
+  useEffect(() => { sessionStorage.removeItem(AVISO_SESSAO_EXPIRADA); }, []);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,6 +52,12 @@ export const Login = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Acessar Conta</h2>
         
+        {sessaoExpirou && !erro && (
+          <div role="status" className="mb-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            Sua sessão expirou. Faça login novamente.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           
           {/* Campo Email */}

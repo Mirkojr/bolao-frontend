@@ -19,6 +19,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** Marca (no sessionStorage) que a sessão expirou, para a tela de login avisar */
+export const AVISO_SESSAO_EXPIRADA = 'sessao_expirada';
+
+/** Momento (ms) em que o JWT expira, lido do campo `exp`; null se não der para ler */
+export const lerExpiracaoDoToken = (token: string): number | null => {
+    try {
+        const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const { exp } = JSON.parse(atob(payload));
+        return typeof exp === 'number' ? exp * 1000 : null;
+    } catch {
+        return null;
+    }
+};
+
+// setTimeout só aceita até ~24,8 dias
+const MAX_TIMEOUT = 2 ** 31 - 1;
+
 // FUNÇÕES HELPERS 
 const getStoredUser = (): User | null => {
     try {
@@ -56,11 +73,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
+    const expirarSessao = useCallback(() => {
+        sessionStorage.setItem(AVISO_SESSAO_EXPIRADA, '1');
+        logout();
+    }, [logout]);
+
     // -- EFEITOS --
+    // A API respondeu 401 com sessão ativa (token expirado ou inválido)
     useEffect(() => {
-        window.addEventListener(AUTH_LOGOUT_EVENT, logout);
-        return () => window.removeEventListener(AUTH_LOGOUT_EVENT, logout);
-    }, [logout]); 
+        window.addEventListener(AUTH_LOGOUT_EVENT, expirarSessao);
+        return () => window.removeEventListener(AUTH_LOGOUT_EVENT, expirarSessao);
+    }, [expirarSessao]); 
+
+    // Desloga no momento em que o token expira, sem esperar a próxima
+    // requisição falhar (inclusive quando o app abre com um token já vencido)
+    useEffect(() => {
+        if (!user) return;
+        const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+        const expiraEm = token ? lerExpiracaoDoToken(token) : null;
+        if (expiraEm === null) return;
+
+        const restante = Math.max(0, expiraEm - Date.now());
+        const timer = setTimeout(expirarSessao, Math.min(restante, MAX_TIMEOUT));
+        return () => clearTimeout(timer);
+    }, [user, expirarSessao]);
 
     // -- RETORNO --
     const contextValue = useMemo(() => ({

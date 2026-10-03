@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 
 import Home from '@/pages/home';
-import { AdminBolaoPage } from '@/pages/admin/ListarBoloes/ListarBoloes';
+import { AdminBolaoPage } from '@/pages/boloes/ListarBoloes/ListarBoloes';
 import { Login } from '@/pages/login/login-page';
 import { Register } from '@/pages/login/register-page';
-import { EditarBolaoPage } from '@/pages/admin/EditarBoloes/EditarBoloes';
+import { EditarBolaoPage } from '@/pages/boloes/EditarBolao/EditarBolao';
 import { NotFoundPage } from '@/pages/not-found/not-found-page';
 import { TimesPage } from '@/pages/admin/Times/TimesPage';
 import { JogosPage } from '@/pages/admin/Jogos/JogosPage';

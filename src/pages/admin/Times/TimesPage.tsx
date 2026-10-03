@@ -31,7 +31,12 @@ export const TimesPage = () => {
 
     const handleDelete = async (t: Time) => {
         if (confirm(`Excluir o time "${t.nome}"? Essa ação não pode ser desfeita.`)) {
-            await deletarTime(String(t.id));
+            try {
+                await deletarTime(String(t.id));
+            } catch (e) {
+                // ex.: 409 quando há palpites/jogos vinculados
+                alert(e instanceof Error ? e.message : "Não foi possível excluir.");
+            }
         }
     };
 
